@@ -22,6 +22,12 @@ import { Route as PuStoneRouteImport } from './routes/pu-stone'
 import { Route as UvMarbleRouteImport } from './routes/uv-marble'
 import { Route as WhyUsRouteImport } from './routes/why-us'
 import { Route as WpcDeckingRouteImport } from './routes/wpc-decking'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminContactsRouteImport } from './routes/admin/contacts'
+import { Route as AdminGalleryRouteImport } from './routes/admin/gallery'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminProductsRouteImport } from './routes/admin/products'
+import { Route as AdminQuotesRouteImport } from './routes/admin/quotes'
 import { Route as WpcPanelsIndexRouteImport } from './routes/wpc-panels/index'
 import { Route as WpcPanelsAcousticRouteImport } from './routes/wpc-panels/acoustic'
 import { Route as WpcPanelsIndoorRouteImport } from './routes/wpc-panels/indoor'
@@ -92,6 +98,36 @@ const WpcDeckingRoute = WpcDeckingRouteImport.update({
   path: '/wpc-decking',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminContactsRoute = AdminContactsRouteImport.update({
+  id: '/admin/contacts',
+  path: '/admin/contacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminGalleryRoute = AdminGalleryRouteImport.update({
+  id: '/admin/gallery',
+  path: '/admin/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/admin/products',
+  path: '/admin/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminQuotesRoute = AdminQuotesRouteImport.update({
+  id: '/admin/quotes',
+  path: '/admin/quotes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WpcPanelsIndexRoute = WpcPanelsIndexRouteImport.update({
   id: '/wpc-panels/',
   path: '/wpc-panels/',
@@ -127,9 +163,15 @@ export interface FileRoutesByFullPath {
   '/uv-marble': typeof UvMarbleRoute
   '/why-us': typeof WhyUsRoute
   '/wpc-decking': typeof WpcDeckingRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/quotes': typeof AdminQuotesRoute
   '/wpc-panels/acoustic': typeof WpcPanelsAcousticRoute
   '/wpc-panels/indoor': typeof WpcPanelsIndoorRoute
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
+  '/admin/': typeof AdminIndexRoute
   '/wpc-panels/': typeof WpcPanelsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -146,9 +188,15 @@ export interface FileRoutesByTo {
   '/uv-marble': typeof UvMarbleRoute
   '/why-us': typeof WhyUsRoute
   '/wpc-decking': typeof WpcDeckingRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/quotes': typeof AdminQuotesRoute
   '/wpc-panels/acoustic': typeof WpcPanelsAcousticRoute
   '/wpc-panels/indoor': typeof WpcPanelsIndoorRoute
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
+  '/admin': typeof AdminIndexRoute
   '/wpc-panels': typeof WpcPanelsIndexRoute
 }
 export interface FileRoutesById {
@@ -166,9 +214,15 @@ export interface FileRoutesById {
   '/uv-marble': typeof UvMarbleRoute
   '/why-us': typeof WhyUsRoute
   '/wpc-decking': typeof WpcDeckingRoute
+  '/admin/contacts': typeof AdminContactsRoute
+  '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/quotes': typeof AdminQuotesRoute
   '/wpc-panels/acoustic': typeof WpcPanelsAcousticRoute
   '/wpc-panels/indoor': typeof WpcPanelsIndoorRoute
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
+  '/admin/': typeof AdminIndexRoute
   '/wpc-panels/': typeof WpcPanelsIndexRoute
 }
 export interface FileRouteTypes {
@@ -187,9 +241,15 @@ export interface FileRouteTypes {
     | '/uv-marble'
     | '/why-us'
     | '/wpc-decking'
+    | '/admin/contacts'
+    | '/admin/gallery'
+    | '/admin/login'
+    | '/admin/products'
+    | '/admin/quotes'
     | '/wpc-panels/acoustic'
     | '/wpc-panels/indoor'
     | '/wpc-panels/outdoor'
+    | '/admin/'
     | '/wpc-panels/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -206,9 +266,15 @@ export interface FileRouteTypes {
     | '/uv-marble'
     | '/why-us'
     | '/wpc-decking'
+    | '/admin/contacts'
+    | '/admin/gallery'
+    | '/admin/login'
+    | '/admin/products'
+    | '/admin/quotes'
     | '/wpc-panels/acoustic'
     | '/wpc-panels/indoor'
     | '/wpc-panels/outdoor'
+    | '/admin'
     | '/wpc-panels'
   id:
     | '__root__'
@@ -225,9 +291,15 @@ export interface FileRouteTypes {
     | '/uv-marble'
     | '/why-us'
     | '/wpc-decking'
+    | '/admin/contacts'
+    | '/admin/gallery'
+    | '/admin/login'
+    | '/admin/products'
+    | '/admin/quotes'
     | '/wpc-panels/acoustic'
     | '/wpc-panels/indoor'
     | '/wpc-panels/outdoor'
+    | '/admin/'
     | '/wpc-panels/'
   fileRoutesById: FileRoutesById
 }
@@ -245,9 +317,15 @@ export interface RootRouteChildren {
   UvMarbleRoute: typeof UvMarbleRoute
   WhyUsRoute: typeof WhyUsRoute
   WpcDeckingRoute: typeof WpcDeckingRoute
+  AdminContactsRoute: typeof AdminContactsRoute
+  AdminGalleryRoute: typeof AdminGalleryRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminProductsRoute: typeof AdminProductsRoute
+  AdminQuotesRoute: typeof AdminQuotesRoute
   WpcPanelsAcousticRoute: typeof WpcPanelsAcousticRoute
   WpcPanelsIndoorRoute: typeof WpcPanelsIndoorRoute
   WpcPanelsOutdoorRoute: typeof WpcPanelsOutdoorRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   WpcPanelsIndexRoute: typeof WpcPanelsIndexRoute
 }
 
@@ -344,6 +422,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WpcDeckingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/contacts': {
+      id: '/admin/contacts'
+      path: '/admin/contacts'
+      fullPath: '/admin/contacts'
+      preLoaderRoute: typeof AdminContactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/gallery': {
+      id: '/admin/gallery'
+      path: '/admin/gallery'
+      fullPath: '/admin/gallery'
+      preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/admin/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/quotes': {
+      id: '/admin/quotes'
+      path: '/admin/quotes'
+      fullPath: '/admin/quotes'
+      preLoaderRoute: typeof AdminQuotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/wpc-panels/': {
       id: '/wpc-panels/'
       path: '/wpc-panels'
@@ -389,9 +509,15 @@ const rootRouteChildren: RootRouteChildren = {
   UvMarbleRoute: UvMarbleRoute,
   WhyUsRoute: WhyUsRoute,
   WpcDeckingRoute: WpcDeckingRoute,
+  AdminContactsRoute: AdminContactsRoute,
+  AdminGalleryRoute: AdminGalleryRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminProductsRoute: AdminProductsRoute,
+  AdminQuotesRoute: AdminQuotesRoute,
   WpcPanelsAcousticRoute: WpcPanelsAcousticRoute,
   WpcPanelsIndoorRoute: WpcPanelsIndoorRoute,
   WpcPanelsOutdoorRoute: WpcPanelsOutdoorRoute,
+  AdminIndexRoute: AdminIndexRoute,
   WpcPanelsIndexRoute: WpcPanelsIndexRoute,
 }
 export const routeTree = rootRouteImport

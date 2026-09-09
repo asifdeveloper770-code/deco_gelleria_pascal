@@ -49,9 +49,6 @@ const navItems: NavItem[] = [
   { to: "/uv-marble", label: "UV Marble" },
   { to: "/wpc-decking", label: "Decking" },
   { to: "/miscellaneous", label: "Miscellaneous" },
-  { to: "/before-and-after", label: "Before And After" },
-  { to: "/finishing", label: "Finishing" },
-  // { to: "/wpc-decking", label: "Bulk & Trade" },
   { to: "/gallery", label: "Gallery" },
   { to: "/why-us", label: "Why Choose Us" },
   // { to: "/faq", label: "FAQ" },
@@ -67,9 +64,6 @@ export function SiteShell({ children }: SiteShellProps) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="bg-primary px-4 py-2 text-center text-xs font-semibold text-primary-foreground sm:text-sm">
-        Serving Los Angeles, Orange County & surrounding areas
-      </div>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur-xl">
         <div className="site-container grid h-20 grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
           <Link to="/" className="flex min-w-0 items-center" aria-label="Deco Galleria home">
@@ -77,7 +71,7 @@ export function SiteShell({ children }: SiteShellProps) {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-1 xl:flex" aria-label="Main navigation">
+          <nav className="hidden items-center xl:flex" aria-label="Main navigation">
             {navItems.map((item) => {
               if ("children" in item) {
                 return (
