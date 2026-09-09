@@ -2,6 +2,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CTA, PageIntro, ProductShowcase } from "@/components/content-blocks";
 import acousticImage from "@/assets/deco-hero.jpg";
+import { GalleryPage } from "@/components/pages";
 
 export const Route = createFileRoute("/wpc-panels/acoustic")({
   head: () => ({
@@ -42,8 +43,9 @@ export function AcousticPage() {
           "Sleek architectural slatted aesthetic",
         ]}
       />
+      <GalleryPage/>
 
-      <CTA />
+      {/* <CTA /> */}
     </>
   );
 }

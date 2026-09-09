@@ -11,13 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as BeforeAndAfterRouteImport } from './routes/before-and-after'
 import { Route as BulkOrdersRouteImport } from './routes/bulk-orders'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as FinishedProductsRouteImport } from './routes/finished-products'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as MiscellaneousRouteImport } from './routes/miscellaneous'
 import { Route as PuStoneRouteImport } from './routes/pu-stone'
 import { Route as UvMarbleRouteImport } from './routes/uv-marble'
 import { Route as WhyUsRouteImport } from './routes/why-us'
+import { Route as WpcDeckingRouteImport } from './routes/wpc-decking'
 import { Route as WpcPanelsIndexRouteImport } from './routes/wpc-panels/index'
 import { Route as WpcPanelsAcousticRouteImport } from './routes/wpc-panels/acoustic'
 import { Route as WpcPanelsIndoorRouteImport } from './routes/wpc-panels/indoor'
@@ -31,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeforeAndAfterRoute = BeforeAndAfterRouteImport.update({
+  id: '/before-and-after',
+  path: '/before-and-after',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BulkOrdersRoute = BulkOrdersRouteImport.update({
@@ -48,9 +57,19 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FinishedProductsRoute = FinishedProductsRouteImport.update({
+  id: '/finished-products',
+  path: '/finished-products',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MiscellaneousRoute = MiscellaneousRouteImport.update({
+  id: '/miscellaneous',
+  path: '/miscellaneous',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PuStoneRoute = PuStoneRouteImport.update({
@@ -66,6 +85,11 @@ const UvMarbleRoute = UvMarbleRouteImport.update({
 const WhyUsRoute = WhyUsRouteImport.update({
   id: '/why-us',
   path: '/why-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WpcDeckingRoute = WpcDeckingRouteImport.update({
+  id: '/wpc-decking',
+  path: '/wpc-decking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WpcPanelsIndexRoute = WpcPanelsIndexRouteImport.update({
@@ -92,13 +116,17 @@ const WpcPanelsOutdoorRoute = WpcPanelsOutdoorRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/before-and-after': typeof BeforeAndAfterRoute
   '/bulk-orders': typeof BulkOrdersRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/finished-products': typeof FinishedProductsRoute
   '/gallery': typeof GalleryRoute
+  '/miscellaneous': typeof MiscellaneousRoute
   '/pu-stone': typeof PuStoneRoute
   '/uv-marble': typeof UvMarbleRoute
   '/why-us': typeof WhyUsRoute
+  '/wpc-decking': typeof WpcDeckingRoute
   '/wpc-panels/acoustic': typeof WpcPanelsAcousticRoute
   '/wpc-panels/indoor': typeof WpcPanelsIndoorRoute
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
@@ -107,13 +135,17 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/before-and-after': typeof BeforeAndAfterRoute
   '/bulk-orders': typeof BulkOrdersRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/finished-products': typeof FinishedProductsRoute
   '/gallery': typeof GalleryRoute
+  '/miscellaneous': typeof MiscellaneousRoute
   '/pu-stone': typeof PuStoneRoute
   '/uv-marble': typeof UvMarbleRoute
   '/why-us': typeof WhyUsRoute
+  '/wpc-decking': typeof WpcDeckingRoute
   '/wpc-panels/acoustic': typeof WpcPanelsAcousticRoute
   '/wpc-panels/indoor': typeof WpcPanelsIndoorRoute
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
@@ -123,13 +155,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/before-and-after': typeof BeforeAndAfterRoute
   '/bulk-orders': typeof BulkOrdersRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/finished-products': typeof FinishedProductsRoute
   '/gallery': typeof GalleryRoute
+  '/miscellaneous': typeof MiscellaneousRoute
   '/pu-stone': typeof PuStoneRoute
   '/uv-marble': typeof UvMarbleRoute
   '/why-us': typeof WhyUsRoute
+  '/wpc-decking': typeof WpcDeckingRoute
   '/wpc-panels/acoustic': typeof WpcPanelsAcousticRoute
   '/wpc-panels/indoor': typeof WpcPanelsIndoorRoute
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
@@ -140,13 +176,17 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/before-and-after'
     | '/bulk-orders'
     | '/contact'
     | '/faq'
+    | '/finished-products'
     | '/gallery'
+    | '/miscellaneous'
     | '/pu-stone'
     | '/uv-marble'
     | '/why-us'
+    | '/wpc-decking'
     | '/wpc-panels/acoustic'
     | '/wpc-panels/indoor'
     | '/wpc-panels/outdoor'
@@ -155,13 +195,17 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/before-and-after'
     | '/bulk-orders'
     | '/contact'
     | '/faq'
+    | '/finished-products'
     | '/gallery'
+    | '/miscellaneous'
     | '/pu-stone'
     | '/uv-marble'
     | '/why-us'
+    | '/wpc-decking'
     | '/wpc-panels/acoustic'
     | '/wpc-panels/indoor'
     | '/wpc-panels/outdoor'
@@ -170,13 +214,17 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/before-and-after'
     | '/bulk-orders'
     | '/contact'
     | '/faq'
+    | '/finished-products'
     | '/gallery'
+    | '/miscellaneous'
     | '/pu-stone'
     | '/uv-marble'
     | '/why-us'
+    | '/wpc-decking'
     | '/wpc-panels/acoustic'
     | '/wpc-panels/indoor'
     | '/wpc-panels/outdoor'
@@ -186,13 +234,17 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  BeforeAndAfterRoute: typeof BeforeAndAfterRoute
   BulkOrdersRoute: typeof BulkOrdersRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  FinishedProductsRoute: typeof FinishedProductsRoute
   GalleryRoute: typeof GalleryRoute
+  MiscellaneousRoute: typeof MiscellaneousRoute
   PuStoneRoute: typeof PuStoneRoute
   UvMarbleRoute: typeof UvMarbleRoute
   WhyUsRoute: typeof WhyUsRoute
+  WpcDeckingRoute: typeof WpcDeckingRoute
   WpcPanelsAcousticRoute: typeof WpcPanelsAcousticRoute
   WpcPanelsIndoorRoute: typeof WpcPanelsIndoorRoute
   WpcPanelsOutdoorRoute: typeof WpcPanelsOutdoorRoute
@@ -213,6 +265,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/before-and-after': {
+      id: '/before-and-after'
+      path: '/before-and-after'
+      fullPath: '/before-and-after'
+      preLoaderRoute: typeof BeforeAndAfterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bulk-orders': {
@@ -236,11 +295,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/finished-products': {
+      id: '/finished-products'
+      path: '/finished-products'
+      fullPath: '/finished-products'
+      preLoaderRoute: typeof FinishedProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gallery': {
       id: '/gallery'
       path: '/gallery'
       fullPath: '/gallery'
       preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/miscellaneous': {
+      id: '/miscellaneous'
+      path: '/miscellaneous'
+      fullPath: '/miscellaneous'
+      preLoaderRoute: typeof MiscellaneousRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pu-stone': {
@@ -262,6 +335,13 @@ declare module '@tanstack/react-router' {
       path: '/why-us'
       fullPath: '/why-us'
       preLoaderRoute: typeof WhyUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wpc-decking': {
+      id: '/wpc-decking'
+      path: '/wpc-decking'
+      fullPath: '/wpc-decking'
+      preLoaderRoute: typeof WpcDeckingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/wpc-panels/': {
@@ -298,13 +378,17 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  BeforeAndAfterRoute: BeforeAndAfterRoute,
   BulkOrdersRoute: BulkOrdersRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  FinishedProductsRoute: FinishedProductsRoute,
   GalleryRoute: GalleryRoute,
+  MiscellaneousRoute: MiscellaneousRoute,
   PuStoneRoute: PuStoneRoute,
   UvMarbleRoute: UvMarbleRoute,
   WhyUsRoute: WhyUsRoute,
+  WpcDeckingRoute: WpcDeckingRoute,
   WpcPanelsAcousticRoute: WpcPanelsAcousticRoute,
   WpcPanelsIndoorRoute: WpcPanelsIndoorRoute,
   WpcPanelsOutdoorRoute: WpcPanelsOutdoorRoute,

@@ -2,37 +2,37 @@ import { CTA, FinishSelector, PageIntro, ProductShowcase } from "@/components/co
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import fenceImage from "@/assets/deco-hero.jpg";
+import deckingImage from "@/assets/deco-galleria-logo.png";
 
-export const Route = createFileRoute("/pu-stone")({
+export const Route = createFileRoute("/wpc-decking")({
   head: () => ({
     meta: [
       {
-        title: "WPC Fencing Solutions | Deco Galleria",
+        title: "WPC Composite Decking Los Angeles | Deco Galleria",
       },
       {
         name: "description",
-        content: "Durable, eco-friendly WPC fencing designed to resist California sun, heat, and coastal moisture without painting or staining.",
+        content: "Durable, slip-resistant WPC composite decking boards built for patios, poolsides, and outdoor living spaces. Rot, splinter, and stain resistant.",
       },
-      { property: "og:title", content: "WPC Fencing | Deco Galleria" },
-      { property: "og:description", content: "Modern wood-plastic composite outdoor privacy barriers with 15–20+ year longevity." },
+      { property: "og:title", content: "WPC Outdoor Decking | Deco Galleria" },
+      { property: "og:description", content: "Low-maintenance, weather-resistant composite decking engineered for long-lasting outdoor performance." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: WpcFencingPage,
+  component: WpcDeckingPage,
 });
 
 const galleryImages = [
-  { src: fenceImage, title: "Teak Privacy Wall", category: "Residential Perimeter" },
-  { src: fenceImage, title: "Modern Slate Grey Fence", category: "Contemporary Backyard" },
-  { src: fenceImage, title: "Walnut Horizontal Slats", category: "Patio Enclosure" },
-  { src: fenceImage, title: "Charcoal Boundary Panel", category: "Commercial Exterior" },
-  { src: fenceImage, title: "Warm Oak Garden Screen", category: "Poolside Privacy" },
-  { src: fenceImage, title: "Natural Timber Finish", category: "Front Yard Accent" },
+  { src: deckingImage, title: "Teak Outdoor Patio Deck", category: "Residential Backyard" },
+  { src: deckingImage, title: "Charcoal Poolside Decking", category: "Pool & Spa Enclosure" },
+  { src: deckingImage, title: "Warm Walnut Terrace", category: "Rooftop Lounge" },
+  { src: deckingImage, title: "Slate Grey Commercial Walkway", category: "Hospitality & Dining" },
+  { src: deckingImage, title: "Natural Oak Balcony Deck", category: "Multi-Family Residence" },
+  { src: deckingImage, title: "Weathered Ash Garden Pathway", category: "Outdoor Landscape" },
 ];
 
-export function WpcFencingPage() {
+export function WpcDeckingPage() {
   const [selectedImage, setSelectedImage] = useState<{
     src: string;
     title: string;
@@ -42,28 +42,28 @@ export function WpcFencingPage() {
   return (
     <>
       <PageIntro
-        eyebrow="Exterior & Boundary Solutions"
-        title="WPC Fencing"
-        text="A modern outdoor barrier made by blending recycled wood fibers with plastic polymers—delivering the natural warmth of timber with unmatched longevity."
+        eyebrow="Outdoor Flooring Solutions"
+        title="WPC Outdoor Decking"
+        text="Transform patios, terraces, and pool areas with high-performance Wood-Plastic Composite decking boards that deliver authentic timber character without splinters, warping, or seasonal staining."
       />
 
       <ProductShowcase
-        eyebrow="Key Facts & Benefits"
-        title="Low-maintenance fencing built for the elements"
-        description="California experiences high heat, dry spells, and coastal moisture. While natural wood absorbs water and splits, WPC is completely waterproof, resists swelling or decay, and includes UV inhibitors to prevent fading under intense sun exposure."
-        image={fenceImage}
-        alt="Modern WPC outdoor privacy fence in natural wood finish"
+        eyebrow="Built for the Elements"
+        title="Superior strength, slip-resistance, and zero maintenance"
+        description="Crafted from a blend of recycled wood fibers and high-density polymers, our WPC decking boards resist harsh UV rays, heavy foot traffic, and water damage. Features co-extruded protective capping for maximum stain and scratch resistance."
+        image={deckingImage}
+        alt="Modern WPC composite deck installed on an outdoor patio"
         specs={[
-          "15–20+ year expected lifespan",
-          "Low maintenance (never needs painting or staining)",
-          "Pest proof (resists rot, splitting, mold & termites)",
-          "Eco-friendly recycled materials",
-          "UV resistant & waterproof construction",
-          "Easy cleanup with just soap & water",
+          "25+ Year residential performance lifespan",
+          "Slip-resistant textured surface",
+          "Splinter-free & barefoot friendly",
+          "Waterproof & mold/rot resistant",
+          "Hidden fastener clip system compatible",
+          "No painting, staining, or sealing required",
         ]}
       />
 
-      <FinishSelector title="Explore fence tones & finishes" />
+      <FinishSelector title="Explore decking colors & woodgrain finishes" />
 
       {/* Product Gallery Section */}
       <section className="section-space border-t border-border bg-secondary/30">
@@ -71,10 +71,10 @@ export function WpcFencingPage() {
           <div className="max-w-2xl">
             <p className="eyebrow">Product showcase</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Explore WPC Fencing Installations
+              Explore WPC Decking Installations
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Discover how composite fencing adds privacy, clean design lines, and weather resistance to residential yards and commercial boundaries.
+              See how our composite decking elevates outdoor living rooms, poolside retreats, and commercial hospitality spaces across California.
             </p>
           </div>
 

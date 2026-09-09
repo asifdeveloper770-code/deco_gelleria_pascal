@@ -102,26 +102,67 @@ export function AboutPage() {
     ;
 }
 
-
-
 export function StonePage() {
-  return <>
-    <PageIntro eyebrow="Lightweight character" title="PU stone with authentic depth and texture." text="Capture the presence of natural masonry on statement walls, columns, fireplaces, and exterior features—with less weight and simpler handling." />
-    <ProductShowcase eyebrow="Stone, reimagined" title="High-impact walls without visual heaviness" description="Layered tones and tactile texture add architectural character to contemporary, organic, and transitional spaces." image={stoneImage} alt="Warm limestone-look PU stone statement wall" specs={["Lightweight construction", "Interior & exterior applications", "Fast installation", "Low-maintenance finish"]} />
-    <FinishSelector title="Explore stone tones" />
-    <CTA />
-  </>
-    ;
+  return (
+    <>
+      <PageIntro
+        eyebrow="Exterior & Boundary Solutions"
+        title="WPC Fencing"
+        text="A modern outdoor barrier made by blending recycled wood fibers with plastic polymers—delivering the natural warmth of timber with unmatched longevity."
+      />
+
+      <ProductShowcase
+        eyebrow="Key Facts & Benefits"
+        title="Low-maintenance fencing built for the elements"
+        description="California experiences high heat, dry spells, and coastal moisture. While natural wood absorbs water and splits, WPC is completely waterproof, resists swelling or decay, and includes UV inhibitors to prevent fading under intense sun exposure."
+        image={stoneImage}
+        alt="Modern WPC outdoor privacy fence in natural wood finish"
+        specs={[
+          "15–20+ year expected lifespan",
+          "Low maintenance (never needs painting or staining)",
+          "Pest proof (resists rot, splitting, mold & termites)",
+          "Eco-friendly recycled materials",
+          "UV resistant & waterproof construction",
+          "Easy cleanup with just soap & water",
+        ]}
+      />
+
+      <FinishSelector title="Explore fence tones & finishes" />
+      <CTA />
+    </>
+  );
 }
 
 export function MarblePage() {
-  return <>
-    <PageIntro eyebrow="Seamless surfaces" title="UV marble sheets for a clean, expansive finish." text="Achieve the visual flow of large-format stone with slim, practical sheets designed for modern feature walls and interior surfaces." />
-    <ProductShowcase eyebrow="Refined simplicity" title="A polished slab look, beautifully resolved" description="Subtle veining and generous scale create a luxurious, continuous surface for bathrooms, reception areas, kitchens, and feature walls." image={marbleImage} alt="Bright bathroom clad in UV marble sheets" specs={["Water-resistant surface", "Seam-conscious installation", "Easy-clean finish", "Multiple marble patterns"]} />
-    <FinishSelector title="Compare marble looks" />
-    <CTA />
-  </>
-    ;
+  return (
+    <>
+      <PageIntro
+        eyebrow="Seamless surfaces"
+        title="UV Marble Sheets"
+        text="A decorative panel made from PVC or acrylic, designed to mimic the appearance of real marble with a special UV-protective coating. A durable, cost-effective alternative to natural marble for feature walls, countertops, and interior surfaces."
+      />
+
+      <ProductShowcase
+        eyebrow="Refined simplicity"
+        title="A polished slab look, beautifully resolved" description="Resistant to scratches, moisture, and discoloration, UV marble sheets provide the luxurious visual flow of large-format stone with easier installation and minimal maintenance for homes and businesses."
+        image={marbleImage}
+        alt="Bright interior feature wall clad in UV marble sheets"
+        specs={[
+          "Standard size: 4′ × 8′ panels",
+          "100% environmentally friendly",
+          "UV resistant & color stability",
+          "Water resistant & termite proof",
+          "Easy to cut to size & install",
+          "Durable, long-lasting & easy to clean",
+          "Many designs available",
+        ]}
+      />
+
+      <FinishSelector title="Compare marble looks" />
+      
+      <CTA />
+    </>
+  );
 }
 
 const gallery = [

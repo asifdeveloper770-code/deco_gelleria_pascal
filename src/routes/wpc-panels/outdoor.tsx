@@ -2,6 +2,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CTA, PageIntro, ProductShowcase } from "@/components/content-blocks";
 import outdoorImage from "@/assets/pu-stone.jpg";
+import { GalleryPage } from "@/components/pages";
 
 export const Route = createFileRoute("/wpc-panels/outdoor")({
   head: () => ({
@@ -42,8 +43,9 @@ export function WpcOutdoorPage() {
           "Ideal for cladding, fencing & siding",
         ]}
       />
+      <GalleryPage/>
 
-      <CTA />
+      {/* <CTA /> */}
     </>
   );
 }
