@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { AdminLayout } from "@/components/admin-layout";
-import { Loader2, Plus, Trash2, Package, Edit2, Image as ImageIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, Package, Edit2, Image as ImageIcon, Upload, Images, X, Check } from "lucide-react";
 
 export const Route = createFileRoute("/admin/products")({
   component: AdminProductsPage,
@@ -27,6 +27,15 @@ interface Product {
   categories?: Category | null;
 }
 
+interface GalleryItem {
+  id: string;
+  title?: string | null;
+  image_url: string;
+  storage_path: string;
+  category?: string | null;
+  created_at: string;
+}
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -40,6 +49,7 @@ function AdminProductsPage() {
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   // Form State
   const [name, setName] = useState("");
@@ -48,8 +58,9 @@ function AdminProductsPage() {
   const [price, setPrice] = useState<number | "">("");
   const [image, setImage] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
-  // Query definition inside AdminProductsPage
+  // Fetch Categories
   const { data: categories = [], isLoading: isLoadingCategories, error: categoryError } = useQuery({
     queryKey: ["admin_categories"],
     queryFn: async () => {
@@ -66,6 +77,20 @@ function AdminProductsPage() {
     },
   });
 
+  // Fetch Gallery Images
+  const { data: galleryItems = [], isLoading: isLoadingGallery } = useQuery({
+    queryKey: ["admin_gallery"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("gallery")
+        .select("id, title, image_url, storage_path, category, created_at")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as GalleryItem[];
+    },
+  });
+
   // Fetch Products joined with Categories
   const { data: products, isLoading } = useQuery({
     queryKey: ["admin_products"],
@@ -79,6 +104,33 @@ function AdminProductsPage() {
       return data as Product[];
     },
   });
+
+  // Handle Local File Upload to Supabase Storage
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("products")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from("products").getPublicUrl(filePath);
+      setImage(data.publicUrl);
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      alert("Failed to upload image. Make sure the 'products' bucket exists and has public RLS policies.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const resetForm = () => {
     setName("");
@@ -238,8 +290,6 @@ function AdminProductsPage() {
                 />
               </div>
 
-              {/* Dynamic Category Dropdown */}
-              {/* Dynamic Dropdown Field */}
               <div>
                 <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   Category
@@ -281,17 +331,59 @@ function AdminProductsPage() {
                 />
               </div>
 
+              {/* Product Image Control & Gallery Picker */}
               <div className="md:col-span-2">
                 <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                  Image URL
+                  Product Image
                 </label>
-                <input
-                  type="text"
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  placeholder="https://..."
-                  className="mt-1.5 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-100 placeholder-slate-600 focus:border-emerald-500 focus:outline-none"
-                />
+                <div className="mt-1.5 flex items-center gap-3">
+                  {image ? (
+                    <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg border border-slate-800">
+                      <img src={image} alt="Preview" className="h-full w-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-slate-800 bg-slate-950 text-slate-600">
+                      <ImageIcon className="h-4 w-4" />
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2">
+                    <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-300 transition-colors hover:border-slate-700 hover:text-white">
+                      {isUploading ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-emerald-500" />
+                      ) : (
+                        <Upload className="h-4 w-4 text-emerald-500" />
+                      )}
+                      <span>{isUploading ? "Uploading..." : "Upload File"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        disabled={isUploading}
+                        className="hidden"
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsGalleryOpen(true)}
+                      className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-300 transition-colors hover:border-slate-700 hover:text-white"
+                    >
+                      <Images className="h-4 w-4 text-emerald-500" />
+                      Select from Gallery
+                    </button>
+                  </div>
+
+                  {image && (
+                    <button
+                      type="button"
+                      onClick={() => setImage("")}
+                      className="text-[10px] font-semibold text-red-400 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="md:col-span-3">
@@ -317,7 +409,7 @@ function AdminProductsPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={createMutation.isPending || updateMutation.isPending}
+                  disabled={createMutation.isPending || updateMutation.isPending || isUploading}
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-500 px-5 py-2 text-xs font-bold text-slate-950 transition-all hover:bg-emerald-400 disabled:opacity-50"
                 >
                   {(createMutation.isPending || updateMutation.isPending) && (
@@ -411,6 +503,90 @@ function AdminProductsPage() {
           )}
         </div>
       </div>
+
+      {/* Gallery Selector Modal */}
+      {isGalleryOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+          <div className="relative flex max-h-[80vh] w-full max-w-3xl flex-col rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-base font-bold text-white">Select Image from Gallery</h3>
+                <p className="text-xs text-slate-400">Choose an existing media asset for this product.</p>
+              </div>
+              <button
+                onClick={() => setIsGalleryOpen(false)}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="my-4 flex-1 overflow-y-auto pr-1">
+              {isLoadingGallery ? (
+                <div className="flex h-48 items-center justify-center">
+                  <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
+                </div>
+              ) : galleryItems.length === 0 ? (
+                <div className="flex h-48 flex-col items-center justify-center text-center">
+                  <Images className="h-8 w-8 text-slate-600" />
+                  <p className="mt-2 text-xs text-slate-400">No images found in gallery.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                  {galleryItems.map((item) => {
+                    const isSelected = image === item.image_url;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => {
+                          setImage(item.image_url);
+                          setIsGalleryOpen(false);
+                        }}
+                        className={`group relative aspect-square overflow-hidden rounded-lg border bg-slate-950 text-left transition-all ${
+                          isSelected
+                            ? "border-emerald-500 ring-2 ring-emerald-500/20"
+                            : "border-slate-800 hover:border-slate-700"
+                        }`}
+                      >
+                        <img
+                          src={item.image_url}
+                          alt={item.title || "Gallery Item"}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        {isSelected && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-emerald-500/20 backdrop-blur-[1px]">
+                            <div className="rounded-full bg-emerald-500 p-1 text-slate-950">
+                              <Check className="h-4 w-4" />
+                            </div>
+                          </div>
+                        )}
+                        {item.title && (
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/90 to-transparent p-2">
+                            <p className="truncate text-[10px] font-medium text-slate-200">
+                              {item.title}
+                            </p>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end border-t border-slate-800 pt-4">
+              <button
+                type="button"
+                onClick={() => setIsGalleryOpen(false)}
+                className="rounded-lg border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }
