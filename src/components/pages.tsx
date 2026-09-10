@@ -219,7 +219,8 @@ const qualities = [
 ];
 export function WhyPage() {
   return <>
-    <PageIntro eyebrow="Why Deco Galleria" title="Beautiful materials should work beautifully, too." text="Our collection is built around the qualities that matter after installation—not just on sample day." />
+    <PageIntro eyebrow="Why Deco Galleria" title="Elevate Your Space. Elevate Your Style." text="At Deco Galleria, we believe every space deserves to look extraordinary. We bring together stylish,
+quality wall panels and décor solutions that make it easier to create the space you've always envisioned" />
     <section className="section-space">
       <div className="site-container grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {qualities.map(({ icon: FeatureIcon, title, text }) =>
@@ -443,3 +444,5 @@ export function ContactPage() {
     </>
   );
 }
+
+export { PageIntro, CTA };
