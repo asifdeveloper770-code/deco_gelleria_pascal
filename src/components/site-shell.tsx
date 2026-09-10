@@ -127,7 +127,7 @@ export function SiteShell({ children }: SiteShellProps) {
             })}
 
             <Button onClick={() => setQuoteOpen(true)} className="ml-2">
-              <Calculator /> Quick quote
+              <Calculator /> Book An Appointment
             </Button>
           </nav>
 
@@ -194,7 +194,7 @@ export function SiteShell({ children }: SiteShellProps) {
                   setQuoteOpen(true);
                 }}
               >
-                <Calculator /> Quick quote
+                <Calculator /> Book An Appointment
               </Button>
             </div>
           </nav>
