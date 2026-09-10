@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import fenceImage from "@/assets/deco-hero.jpg";
+import fenceImage from "@/assets/fencing.jpg";
 import { Loader2, Package } from "lucide-react";
 
 export const Route = createFileRoute("/pu-stone")({
@@ -61,29 +61,26 @@ export function PuStonePage() {
   return (
     <>
       <PageIntro
-        eyebrow="Exterior & Interior Stone Accent"
-        title="PU Stone Panels"
-        text="An ultra-lightweight polyurethane wall panel replicating authentic natural stone surfaces—delivering high-end architectural depth with effortless installation."
+        eyebrow="Exterior & Boundary Solutions"
+        title="WPC Fencing"
+        text="WPC (Wood-Plastic Composite) fencing is a modern outdoor barrier made by blending recycled wood fibers with plastic polymers."
       />
 
       <ProductShowcase
         eyebrow="Key Facts & Benefits"
-        title="Low-maintenance stone veneer built for any surface"
-        description="California experiences high heat, dry spells, and coastal moisture. While heavy natural stone requires structural reinforcement, PU Stone panels are lightweight, completely waterproof, and resistant to UV fading."
+        title="Low-maintenance fencing built for California elements"
+        description="California experiences high heat, dry spells, and coastal moisture. Natural wood absorbs water and splits, but quality WPC boards are waterproof, resist swelling or decay, and include UV inhibitors that protect color from fading under intense sun exposure."
         image={fenceImage}
-        alt="Modern PU stone wall panel installation in natural finish"
+        alt="Modern WPC outdoor composite fencing installation"
         specs={[
-          "15–20+ year expected lifespan",
-          "Ultra-lightweight & high density PU foam",
-          "Weather proof (resists rot, moisture, mold & termites)",
-          "Eco-friendly & non-toxic materials",
-          "UV resistant & waterproof construction",
-          "Easy cleanup with just soap & water",
+          "Lifespan: Typically lasts 15 to 20 years or more, often backed by long warranties",
+          "Low Maintenance: Never needs painting, staining, or sealing; cleans with soap & water",
+          "Pest Proof: Resists rotting, splitting, warping, mold, and termites",
+          "Eco-Friendly: Uses recycled materials and helps reduce logging",
+          "Weather Resistant: Waterproof and resists swelling, rot, or moisture decay",
+          "Sun Protection: Built-in UV inhibitors guard against intense sun fading",
         ]}
       />
-
-      <FinishSelector title="Explore stone tones & textures" />
-
       {/* Filtered PU Stone Product Gallery Section */}
       <section className="section-space border-t border-border bg-secondary/30">
         <div className="site-container">
@@ -135,7 +132,7 @@ export function PuStonePage() {
                     )}
                     <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
-                  <div className="p-4">
+                  {/* <div className="p-4">
                     {product.categories?.name && (
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">
                         {product.categories.name}
@@ -145,7 +142,7 @@ export function PuStonePage() {
                     <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                       ${Number(product.price).toFixed(2)}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               ))}
             </div>
@@ -163,7 +160,7 @@ export function PuStonePage() {
                 alt={selectedProduct.name}
                 className="mx-auto max-h-[70vh] w-auto object-contain"
               />
-              <div className="border-t border-border bg-background p-4">
+              {/* <div className="border-t border-border bg-background p-4">
                 <DialogTitle className="text-lg font-bold">
                   {selectedProduct.name}
                 </DialogTitle>
@@ -175,7 +172,7 @@ export function PuStonePage() {
                     {selectedProduct.description}
                   </p>
                 )}
-              </div>
+              </div> */}
             </div>
           )}
         </DialogContent>

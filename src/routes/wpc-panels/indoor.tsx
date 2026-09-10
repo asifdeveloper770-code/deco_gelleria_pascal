@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { CTA, PageIntro, ProductShowcase } from "@/components/content-blocks";
-import indoorImage from "@/assets/deco-galleria-logo.png";
+import indoorImage from "@/assets/indoor.png";
 import { Loader2, Package } from "lucide-react";
 
 export const Route = createFileRoute("/wpc-panels/indoor")({
@@ -129,7 +129,7 @@ export function WpcIndoorPage() {
                     )}
                     <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
-                  <div className="p-4">
+                  {/* <div className="p-4">
                     {product.categories?.name && (
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                         {product.categories.name}
@@ -139,7 +139,7 @@ export function WpcIndoorPage() {
                     <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                       ${Number(product.price).toFixed(2)}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               ))}
             </div>
@@ -150,9 +150,9 @@ export function WpcIndoorPage() {
       {/* Lightbox Dialog */}
       <Dialog open={!!selectedProduct} onOpenChange={() => setSelectedProduct(null)}>
         <DialogContent className="max-w-3xl overflow-hidden p-0">
-          <DialogTitle className="sr-only">
+          {/* <DialogTitle className="sr-only">
             {selectedProduct?.name || "Product Image Preview"}
-          </DialogTitle>
+          </DialogTitle> */}
           {selectedProduct?.image && (
             <div className="flex flex-col items-center">
               <img
@@ -160,12 +160,12 @@ export function WpcIndoorPage() {
                 alt={selectedProduct.name}
                 className="max-h-[70vh] w-auto object-contain"
               />
-              <div className="w-full border-t border-border bg-card p-4">
+              {/* <div className="w-full border-t border-border bg-card p-4">
                 <h4 className="text-base font-bold text-foreground">{selectedProduct.name}</h4>
                 {selectedProduct.description && (
                   <p className="mt-1 text-xs text-muted-foreground">{selectedProduct.description}</p>
                 )}
-              </div>
+              </div> */}
             </div>
           )}
         </DialogContent>

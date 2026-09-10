@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import marbleImage from "@/assets/uv-marble.jpg";
+import marbleImage from "@/assets/marble.jpg";
 import { Loader2, Package } from "lucide-react";
 
 export const Route = createFileRoute("/uv-marble")({
@@ -136,7 +136,7 @@ export function UvMarblePage() {
                     )}
                     <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
-                  <div className="p-4">
+                  {/* <div className="p-4">
                     {product.categories?.name && (
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">
                         {product.categories.name}
@@ -146,7 +146,7 @@ export function UvMarblePage() {
                     <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                       ${Number(product.price).toFixed(2)}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               ))}
             </div>
@@ -164,7 +164,7 @@ export function UvMarblePage() {
                 alt={selectedProduct.name}
                 className="mx-auto max-h-[70vh] w-auto object-contain"
               />
-              <div className="border-t border-border bg-background p-4">
+              {/* <div className="border-t border-border bg-background p-4">
                 <DialogTitle className="text-lg font-bold">
                   {selectedProduct.name}
                 </DialogTitle>
@@ -176,7 +176,7 @@ export function UvMarblePage() {
                     {selectedProduct.description}
                   </p>
                 )}
-              </div>
+              </div> */}
             </div>
           )}
         </DialogContent>

@@ -39,7 +39,7 @@ const navItems: NavItem[] = [
   {
     label: "WPC Panels",
     children: [
-      { to: "/wpc-panels", label: "All WPC Panels" },
+      { to: "/wpc-panels", label: "WPC Panels" },
       { to: "/wpc-panels/indoor", label: "WPC Indoor Panels" },
       { to: "/wpc-panels/outdoor", label: "WPC Exterior Panels" },
       { to: "/wpc-panels/acoustic", label: "Acoustic Panels" },
