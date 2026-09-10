@@ -12,7 +12,17 @@ import {
 } from "lucide-react";
 import { useState, type FormEvent, type ReactNode } from "react";
 import logoAsset from "@/assets/deco-galleria-logo.png";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogTitle,
+// } from "@/components/ui/dialog";
+// import { FormEvent, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +30,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+// import { Field } from "@/components/site-shell";
+import {  Loader2 } from "lucide-react";
 
 type LinkItem = {
   to: string;
@@ -241,15 +254,96 @@ export function SiteShell({ children }: SiteShellProps) {
   );
 }
 
-function QuoteDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-  const [submitted, setSubmitted] = useState(false);
-  const [area, setArea] = useState(120);
-  const [material, setMaterial] = useState("WPC Panels");
-  const estimate = material === "WPC Panels" ? area * 8.5 : material === "PU Stone" ? area * 11 : area * 9.5;
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface QuoteDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function QuoteDialog({ open, onOpenChange }: QuoteDialogProps) {
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Form inputs
+  const [userType, setUserType] = useState("Homeowner");
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [area, setArea] = useState(120);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [projectNotes, setProjectNotes] = useState("");
+
+  // Fetch categories from Supabase
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id, name, slug")
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+      
+      // Auto-select first category if available
+      if (data && data.length > 0 && !categoryId) {
+        setCategoryId(data[0].id);
+      }
+      
+      return data as Category[];
+    },
+  });
+
+  // Calculate pricing based on selected category name
+  const selectedCategory = categories.find((c) => c.id === categoryId);
+  const getRate = (categoryName?: string) => {
+    switch (categoryName) {
+      case "PU Stone":
+        return 11;
+      case "UV Marble Sheets":
+        return 9.5;
+      case "WPC Panels":
+      default:
+        return 8.5;
+    }
+  };
+
+  const estimate = area * getRate(selectedCategory?.name);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const { error } = await supabase.from("quotes").insert([
+        {
+          user_type: userType,
+          category_id: categoryId || null,
+          area_sqft: area,
+          estimated_price: estimate,
+          name,
+          email,
+          project_notes: projectNotes || null,
+        },
+      ]);
+
+      if (error) throw error;
+
+      setSubmitted(true);
+    } catch (err: any) {
+      setErrorMessage(
+        err.message || "Failed to submit quote request. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -264,7 +358,9 @@ function QuoteDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (ope
         {submitted ? (
           <div className="py-8 text-center">
             <CheckCircle2 className="mx-auto h-12 w-12 text-primary" />
-            <DialogTitle className="mt-5 text-2xl">Your project is ready to review</DialogTitle>
+            <DialogTitle className="mt-5 text-2xl">
+              Your project is ready to review
+            </DialogTitle>
             <DialogDescription className="mx-auto mt-3 max-w-sm leading-6">
               Your planning estimate is ${estimate.toLocaleString(undefined, { maximumFractionDigits: 0 })}. We’ll follow up to confirm finishes, measurements, and availability.
             </DialogDescription>
@@ -276,34 +372,52 @@ function QuoteDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (ope
           <>
             <DialogHeader>
               <p className="eyebrow">Project planning</p>
-              <DialogTitle className="text-2xl">Get a quick material estimate</DialogTitle>
+              <DialogTitle className="text-2xl">
+                Get a quick material estimate
+              </DialogTitle>
               <DialogDescription>
                 Share a few details. This planning range excludes installation, tax, and delivery.
               </DialogDescription>
             </DialogHeader>
+
             <form onSubmit={submit} className="mt-2 grid gap-4">
+              {errorMessage && (
+                <div className="rounded border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+                  {errorMessage}
+                </div>
+              )}
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="I am a">
-                  <select required className="form-control">
-                    <option>Homeowner</option>
-                    <option>Contractor</option>
-                    <option>Designer / Architect</option>
-                    <option>Property Manager</option>
+                  <select
+                    required
+                    className="form-control"
+                    value={userType}
+                    onChange={(e) => setUserType(e.target.value)}
+                  >
+                    <option value="Homeowner">Homeowner</option>
+                    <option value="Contractor">Contractor</option>
+                    <option value="Designer / Architect">Designer / Architect</option>
+                    <option value="Property Manager">Property Manager</option>
                   </select>
                 </Field>
+
                 <Field label="Material">
                   <select
                     required
                     className="form-control"
-                    value={material}
-                    onChange={(event) => setMaterial(event.target.value)}
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
                   >
-                    <option>WPC Panels</option>
-                    <option>PU Stone</option>
-                    <option>UV Marble Sheets</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
                   </select>
                 </Field>
               </div>
+
               <Field label={`Approximate coverage: ${area} sq. ft.`}>
                 <input
                   type="range"
@@ -315,6 +429,7 @@ function QuoteDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (ope
                   className="w-full accent-primary"
                 />
               </Field>
+
               <div className="border border-border bg-secondary p-4">
                 <p className="text-xs font-bold uppercase text-muted-foreground">
                   Planning estimate
@@ -323,23 +438,51 @@ function QuoteDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (ope
                   ${estimate.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Name">
-                  <input className="form-control" required maxLength={100} autoComplete="name" />
+                  <input
+                    className="form-control"
+                    required
+                    maxLength={100}
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </Field>
                 <Field label="Email">
-                  <input className="form-control" required type="email" maxLength={255} autoComplete="email" />
+                  <input
+                    className="form-control"
+                    required
+                    type="email"
+                    maxLength={255}
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </Field>
               </div>
+
               <Field label="Project notes (optional)">
                 <textarea
                   className="form-control min-h-20"
                   maxLength={600}
                   placeholder="Room, finish, timing, or delivery details"
+                  value={projectNotes}
+                  onChange={(e) => setProjectNotes(e.target.value)}
                 />
               </Field>
-              <Button type="submit" size="lg" className="w-full">
-                Request my quote <ArrowRight />
+
+              <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                {loading ? (
+                  <>
+                    Submitting... <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    Request my quote <ArrowRight />
+                  </>
+                )}
               </Button>
             </form>
           </>

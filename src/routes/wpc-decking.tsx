@@ -61,24 +61,24 @@ export function WpcDeckingPage() {
   return (
     <>
       <PageIntro
-        eyebrow="Outdoor Flooring Solutions"
-        title="WPC Outdoor Decking"
-        text="Transform patios, terraces, and pool areas with high-performance Wood-Plastic Composite decking boards that deliver authentic timber character without splinters, warping, or seasonal staining."
+        eyebrow="Outdoor Living"
+        title="WPC DECKING"
+        text="Transform your outdoor space with premium WPC Decking from Deco Galleria. Designed to deliver the natural look of wood with the durability and low-maintenance benefits of modern composite materials."
       />
 
       <ProductShowcase
-        eyebrow="Built for the Elements"
-        title="Superior strength, slip-resistance, and zero maintenance"
-        description="Crafted from a blend of recycled wood fibers and high-density polymers, our WPC decking boards resist harsh UV rays, heavy foot traffic, and water damage. Features co-extruded protective capping for maximum stain and scratch resistance."
+        eyebrow="Beautiful. Durable. Built for Outdoor Living."
+        title="Why Choose Our WPC Decking?"
+        description="Enjoy the authentic beauty of natural wood without the constant upkeep. Ideal for patios, balconies, pool areas, and both residential or commercial applications."
         image={deckingImage}
         alt="Modern WPC composite deck installed on an outdoor patio"
         specs={[
-          "25+ Year residential performance lifespan",
-          "Slip-resistant textured surface",
-          "Splinter-free & barefoot friendly",
-          "Waterproof & mold/rot resistant",
-          "Hidden fastener clip system compatible",
-          "No painting, staining, or sealing required",
+          "Dimensions: 5.5\" x 114\" x 1\"",
+          "Durable & long-lasting against changing weather",
+          "Low maintenance — no regular staining or sealing required",
+          "Modern & stylish colors and finishes available",
+          "Resistant to moisture, wear, and everyday outdoor use",
+          "Great for patios, balconies, pool areas, and commercial spaces",
         ]}
       />
 
@@ -90,10 +90,10 @@ export function WpcDeckingPage() {
           <div className="max-w-2xl">
             <p className="eyebrow">Product showcase</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Explore WPC Decking Installations
+              Explore WPC Indoor Finishes & Installations
             </h2>
             <p className="mt-3 text-muted-foreground">
-              See how our composite decking elevates outdoor living rooms, poolside retreats, and commercial hospitality spaces across California.
+              See how our slatted indoor wall panels bring depth, warm texture, and continuous architectural rhythm to living rooms, bedrooms, and commercial spaces.
             </p>
           </div>
 
@@ -103,14 +103,12 @@ export function WpcDeckingPage() {
             </div>
           ) : error ? (
             <div className="mt-10 p-4 text-center text-sm text-destructive">
-              Failed to load WPC decking products.
+              Failed to load indoor products.
             </div>
           ) : products.length === 0 ? (
             <div className="mt-10 flex h-48 flex-col items-center justify-center text-center">
               <Package className="h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">
-                No WPC decking category products found in database.
-              </p>
+              <p className="mt-2 text-sm text-muted-foreground">No indoor category products found.</p>
             </div>
           ) : (
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -137,11 +135,11 @@ export function WpcDeckingPage() {
                   </div>
                   {/* <div className="p-4">
                     {product.categories?.name && (
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                         {product.categories.name}
                       </p>
                     )}
-                    <h3 className="mt-1 text-sm font-bold text-card-foreground">{product.name}</h3>
+                    <h3 className="mt-1 text-sm font-bold text-foreground">{product.name}</h3>
                     <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                       ${Number(product.price).toFixed(2)}
                     </p>

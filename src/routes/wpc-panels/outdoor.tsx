@@ -79,15 +79,15 @@ export function WpcOutdoorPage() {
       />
 
       {/* Dynamic Product Gallery Section */}
-      <section className="section-space border-t border-border bg-secondary/30">
+       <section className="section-space border-t border-border bg-secondary/30">
         <div className="site-container">
           <div className="max-w-2xl">
             <p className="eyebrow">Product showcase</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Explore WPC Outdoor Finishes & Cladding
+              Explore WPC Indoor Finishes & Installations
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Discover weather-engineered outdoor wall solutions designed for maximum durability, architectural distinction, and zero maintenance.
+              See how our slatted indoor wall panels bring depth, warm texture, and continuous architectural rhythm to living rooms, bedrooms, and commercial spaces.
             </p>
           </div>
 
@@ -97,12 +97,12 @@ export function WpcOutdoorPage() {
             </div>
           ) : error ? (
             <div className="mt-10 p-4 text-center text-sm text-destructive">
-              Failed to load product catalog.
+              Failed to load indoor products.
             </div>
           ) : products.length === 0 ? (
             <div className="mt-10 flex h-48 flex-col items-center justify-center text-center">
               <Package className="h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">No outdoor products found in database.</p>
+              <p className="mt-2 text-sm text-muted-foreground">No indoor category products found.</p>
             </div>
           ) : (
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

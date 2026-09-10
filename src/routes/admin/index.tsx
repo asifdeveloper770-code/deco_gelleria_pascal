@@ -1,24 +1,84 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase"; // Adjust path to your Supabase client
 import { AdminLayout } from "@/components/admin-layout";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboardPage,
 });
 
-const mockStats = {
-  totalProducts: 48,
-  pendingQuotes: 12,
-  contactSubmissions: 34,
-  monthlyViews: "14.2K",
-};
+interface RecentQuote {
+  id: string;
+  created_at: string;
+  name: string;
+  email: string;
+  area_sqft: number;
+  categories: {
+    name: string;
+  } | null;
+}
 
-const mockQuotes = [
-  { id: "Q-104", client: "Apex Developments", product: "WPC Wall Panels", area: "1,200 sq. ft.", date: "Today", status: "Pending" },
-  { id: "Q-103", client: "Stratos Architecture", product: "UV Marble Sheets", area: "650 sq. ft.", date: "Yesterday", status: "Approved" },
-  { id: "Q-102", client: "LIRA Luxury Homes", product: "WPC Decking", area: "2,100 sq. ft.", date: "Sep 7, 2026", status: "In Review" },
-];
+export function AdminDashboardPage() {
+  // Fetch count of total products
+  const { data: totalProducts = 0, isLoading: isLoadingProducts } = useQuery({
+    queryKey: ["dashboard_products_count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("products")
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
 
-function AdminDashboardPage() {
+  // Fetch count of total quotes
+  const { data: totalQuotes = 0, isLoading: isLoadingQuotes } = useQuery({
+    queryKey: ["dashboard_quotes_count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("quotes")
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  // Fetch count of contact submissions
+  const { data: contactSubmissions = 0, isLoading: isLoadingContacts } = useQuery({
+    queryKey: ["dashboard_contacts_count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("contacts")
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  // Fetch recent quotes with joined category name
+  const { data: recentQuotes = [], isLoading: isLoadingRecentQuotes } = useQuery({
+    queryKey: ["dashboard_recent_quotes"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("quotes")
+        .select(`
+          id,
+          created_at,
+          name,
+          email,
+          area_sqft,
+          categories (
+            name
+          )
+        `)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      return data as unknown as RecentQuote[];
+    },
+  });
+
   return (
     <AdminLayout>
       <div className="space-y-8">
@@ -34,26 +94,24 @@ function AdminDashboardPage() {
           <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
             <p className="text-xs font-medium text-slate-400">Total Products</p>
             <p className="mt-2 text-3xl font-extrabold text-white">
-              {mockStats.totalProducts}
+              {isLoadingProducts ? "..." : totalProducts}
             </p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-            <p className="text-xs font-medium text-slate-400">Pending Quotes</p>
+            <p className="text-xs font-medium text-slate-400">Total Quotes</p>
             <p className="mt-2 text-3xl font-extrabold text-emerald-400">
-              {mockStats.pendingQuotes}
+              {isLoadingQuotes ? "..." : totalQuotes}
             </p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
             <p className="text-xs font-medium text-slate-400">Contact Requests</p>
             <p className="mt-2 text-3xl font-extrabold text-white">
-              {mockStats.contactSubmissions}
+              {isLoadingContacts ? "..." : contactSubmissions}
             </p>
           </div>
           <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
             <p className="text-xs font-medium text-slate-400">Monthly Pageviews</p>
-            <p className="mt-2 text-3xl font-extrabold text-blue-400">
-              {mockStats.monthlyViews}
-            </p>
+            <p className="mt-2 text-3xl font-extrabold text-blue-400">14.2K</p>
           </div>
         </div>
 
@@ -68,23 +126,46 @@ function AdminDashboardPage() {
                 <tr>
                   <th className="pb-3">ID</th>
                   <th className="pb-3">Client</th>
-                  <th className="pb-3">Product</th>
-                  <th className="pb-3">Status</th>
+                  <th className="pb-3">Category</th>
+                  <th className="pb-3">Area (sqft)</th>
+                  <th className="pb-3">Date</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/50">
-                {mockQuotes.map((q) => (
-                  <tr key={q.id}>
-                    <td className="py-3 font-mono text-emerald-400">{q.id}</td>
-                    <td className="py-3 font-semibold text-slate-200">{q.client}</td>
-                    <td className="py-3">{q.product}</td>
-                    <td className="py-3">
-                      <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                        {q.status}
-                      </span>
+                {isLoadingRecentQuotes ? (
+                  <tr>
+                    <td colSpan={5} className="py-4 text-center text-slate-500">
+                      Loading recent quotes...
                     </td>
                   </tr>
-                ))}
+                ) : recentQuotes.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-4 text-center text-slate-500">
+                      No recent quotes found.
+                    </td>
+                  </tr>
+                ) : (
+                  recentQuotes.map((q) => (
+                    <tr key={q.id}>
+                      <td className="py-3 font-mono text-emerald-400">
+                        {q.id.slice(0, 8)}...
+                      </td>
+                      <td className="py-3 font-semibold text-slate-200">
+                        {q.name}
+                        <span className="block text-[10px] font-normal text-slate-500">
+                          {q.email}
+                        </span>
+                      </td>
+                      <td className="py-3">
+                        {q.categories?.name ?? "Uncategorized"}
+                      </td>
+                      <td className="py-3">{q.area_sqft} sq. ft.</td>
+                      <td className="py-3 text-slate-400">
+                        {new Date(q.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

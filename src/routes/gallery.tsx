@@ -7,18 +7,33 @@ import {
 } from "@/components/ui/dialog";
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import showcaseImage from "@/assets/deco-galleria-logo.png";
 import newer from "@/assets/uv-marble.jpg";
-import heroImage from "@/assets/deco-hero.jpg";
-import bedroomImage from "@/assets/wpc-bedroom.jpg";
-import kitchenImage from "@/assets/wpc-kitchen.jpg";
-import stoneImage from "@/assets/pu-stone.jpg";
-import marbleImage from "@/assets/uv-marble.jpg";
+import before from "@/assets/Before_new.png";
+import after from "@/assets/After_new.png";
+// import heroImage from "@/assets/deco-hero.jpg";
+// import bedroomImage from "@/assets/wpc-bedroom.jpg";
+// import kitchenImage from "@/assets/wpc-kitchen.jpg";
+// import stoneImage from "@/assets/pu-stone.jpg";
+// import marbleImage from "@/assets/uv-marble.jpg";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-type Category =
+type Category = {
+    id: string;
+    name: string;
+};
+
+interface GalleryImage {
+    id: string;
+    image: string;
+    title: string | null;
+    category_id: string | null;
+}
+
+type ProjectCategory =
     | "All"
     | "WPC Wall Panels"
     | "UV Marble Sheets"
@@ -28,7 +43,7 @@ type Category =
 interface ProjectItem {
     id: string;
     title: string;
-    category: Category;
+    category: ProjectCategory;
     location: string;
     completionDate: string;
     sqft: string;
@@ -48,7 +63,7 @@ interface TransformationItem {
     afterImg: string;
 }
 
-const categories: Category[] = [
+const categories: ProjectCategory[] = [
     "All",
     "WPC Wall Panels",
     "UV Marble Sheets",
@@ -206,18 +221,12 @@ const transformations: TransformationItem[] = [
     },
 ];
 
-const gallery = [
-    { category: "Living Room", image: heroImage, title: "Oak double-height wall" },
-    { category: "Bedroom", image: bedroomImage, title: "Soft ash headboard wall" },
-    { category: "Kitchen", image: kitchenImage, title: "Fluted oak island" },
-    { category: "Commercial", image: marbleImage, title: "Calacatta reception finish" },
-    { category: "Exterior", image: stoneImage, title: "Warm stone entry wall" },
-];
-
 export const Route = createFileRoute("/gallery")({
     head: () => ({
         meta: [
-            { title: "Project Gallery & Transformations | Deco Galleria" },
+            {
+                title: "Project Gallery & Transformations | Deco Galleria",
+            },
             {
                 name: "description",
                 content:
@@ -232,29 +241,176 @@ export const Route = createFileRoute("/gallery")({
                 content:
                     "See modern surface materials in bright finished spaces and real-world project case studies.",
             },
-            { property: "og:type", content: "website" },
-            { name: "twitter:card", content: "summary_large_image" },
+            {
+                property: "og:type",
+                content: "website",
+            },
+            {
+                name: "twitter:card",
+                content: "summary_large_image",
+            },
         ],
     }),
     component: GalleryPage,
 });
 
 function GalleryPage() {
-    const [activeCategory, setActiveCategory] = useState<Category>("All");
-    const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(
-        null
-    );
+    const [activeCategory, setActiveCategory] =
+        useState<ProjectCategory>("All");
+
+    const [selectedProject, setSelectedProject] =
+        useState<ProjectItem | null>(null);
+
     const [selectedTransformation, setSelectedTransformation] =
         useState<TransformationItem | null>(null);
 
+    /*
+     * ============================================
+     * DYNAMIC GALLERY STATE
+     * ============================================
+     */
+
+    const [productCategories, setProductCategories] = useState<Category[]>([]);
+    const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+    const [galleryCategory, setGalleryCategory] = useState<string>("All");
+    const [galleryLoading, setGalleryLoading] = useState(true);
+    const [galleryError, setGalleryError] = useState<string | null>(null);
+
+    /*
+     * ============================================
+     * FETCH PRODUCT CATEGORIES + GALLERY IMAGES
+     * ============================================
+     */
+
+    useEffect(() => {
+        async function fetchGalleryData() {
+            try {
+                setGalleryLoading(true);
+                setGalleryError(null);
+
+                /*
+                 * Get only categories that are actually
+                 * being used by products.
+                 *
+                 * products.category_id -> categories.id
+                 */
+
+                const { data: productsData, error: productsError } =
+                    await supabase
+                        .from("products")
+                        .select(`
+                            category_id,
+                            categories (
+                                id,
+                                name
+                            )
+                        `)
+                        .not("category_id", "is", null);
+
+                if (productsError) {
+                    throw productsError;
+                }
+
+                /*
+                 * Remove duplicate categories.
+                 */
+
+                const categoryMap = new Map<string, Category>();
+
+                productsData?.forEach((product: any) => {
+                    const category = product.categories;
+
+                    if (category?.id && category?.name) {
+                        categoryMap.set(category.id, {
+                            id: category.id,
+                            name: category.name,
+                        });
+                    }
+                });
+
+                const uniqueCategories = Array.from(
+                    categoryMap.values()
+                ).sort((a, b) =>
+                    a.name.localeCompare(b.name)
+                );
+
+                setProductCategories(uniqueCategories);
+
+                /*
+                 * Fetch every image from the images table.
+                 *
+                 * Change these column names if your images
+                 * table uses different names.
+                 */
+
+                const { data: imagesData, error: imagesError } =
+                    await supabase
+                        .from("products")
+                        .select(`
+                            id,
+                            image,
+                            category_id
+                        `)
+                        .order("id", {
+                            ascending: false,
+                        });
+
+                if (imagesError) {
+                    throw imagesError;
+                }
+
+                setGalleryImages(
+                    (imagesData as GalleryImage[]) ?? []
+                );
+            } catch (error) {
+                console.error(
+                    "Error loading gallery:",
+                    error
+                );
+
+                setGalleryError(
+                    error instanceof Error
+                        ? error.message
+                        : "Unable to load gallery images."
+                );
+            } finally {
+                setGalleryLoading(false);
+            }
+        }
+
+        fetchGalleryData();
+    }, []);
+
+    /*
+     * ============================================
+     * FILTER GALLERY IMAGES
+     * ============================================
+     */
+
+    const visibleGalleryImages = useMemo(() => {
+        if (galleryCategory === "All") {
+            return galleryImages;
+        }
+
+        return galleryImages.filter(
+            (item) =>
+                item.category_id === galleryCategory
+        );
+    }, [galleryImages, galleryCategory]);
+
+    /*
+     * ============================================
+     * EXISTING PROJECT FILTER
+     * ============================================
+     */
+
     const filteredProjects = useMemo(() => {
         if (activeCategory === "All") return projects;
-        return projects.filter((p) => p.category === activeCategory);
+
+        return projects.filter(
+            (p) => p.category === activeCategory
+        );
     }, [activeCategory]);
-
-    const [filter, setFilter] = useState("All");
-    const visible = filter === "All" ? gallery : gallery.filter((item) => item.category === filter);
-
 
     return (
         <>
@@ -264,28 +420,186 @@ function GalleryPage() {
                 text="Explore completed installations and witness real-world transformations using Deco Galleria WPC panels, UV marble sheets, composite fencing, and decking."
             />
 
-            {/* SECTION 1: FINISHED INSTALLATIONS SHOWCASE */}
+            
+            {/* SECTION 2: BEFORE & AFTER */}
+
+            <section className="section-space border-t border-border bg-secondary/10">
+                <div className="site-container">
+                
+                    <div className="mt-8">
+                        <BeforeAfterSlider
+                            beforeImage={before}
+                            afterImage={after}
+                            beforeAlt="Plain drywall living room wall before WPC installation"
+                            afterAlt="Finished WPC slatted accent wall with ambient lighting"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* ============================================
+                SECTION 3: DYNAMIC SUPABASE GALLERY
+            ============================================ */}
+
             <section className="section-space">
                 <div className="site-container">
+
+                    <div className="max-w-2xl">
+                        <p className="eyebrow">
+                            Gallery
+                        </p>
+
+                        <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                            Explore Our Work
+                        </h2>
+
+                        <p className="mt-3 text-muted-foreground">
+                            Browse our latest projects by product category.
+                        </p>
+                    </div>
+
+                    {/* Dynamic Product Categories */}
+
+                    <div className="mt-8 flex gap-2 overflow-x-auto pb-3">
+
+                        {/* ALL BUTTON */}
+
+                        <Button
+                            variant={
+                                galleryCategory === "All"
+                                    ? "default"
+                                    : "outline"
+                            }
+                            onClick={() =>
+                                setGalleryCategory("All")
+                            }
+                            className="shrink-0"
+                        >
+                            All
+                        </Button>
+
+                        {/* CATEGORIES FROM PRODUCTS */}
+
+                        {productCategories.map(
+                            (category) => (
+                                <Button
+                                    key={category.id}
+                                    variant={
+                                        galleryCategory ===
+                                            category.id
+                                            ? "default"
+                                            : "outline"
+                                    }
+                                    onClick={() =>
+                                        setGalleryCategory(
+                                            category.id
+                                        )
+                                    }
+                                    className="shrink-0"
+                                >
+                                    {category.name}
+                                </Button>
+                            )
+                        )}
+                    </div>
+
+                    {/* Loading State */}
+
+                    {galleryLoading && (
+                        <div className="mt-10 grid gap-5 md:grid-cols-2">
+                            {Array.from({
+                                length: 4,
+                            }).map((_, index) => (
+                                <div
+                                    key={index}
+                                    className="aspect-[4/3] animate-pulse rounded-lg bg-muted"
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Error State */}
+
+                    {!galleryLoading &&
+                        galleryError && (
+                            <div className="mt-10 rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-sm text-destructive">
+                                Failed to load gallery images.
+                                <br />
+                                {galleryError}
+                            </div>
+                        )}
+
+                    {/* Empty State */}
+
+                    {!galleryLoading &&
+                        !galleryError &&
+                        visibleGalleryImages.length ===
+                        0 && (
+                            <div className="mt-10 rounded-lg border border-border bg-muted/30 p-12 text-center">
+                                <h3 className="text-lg font-semibold">
+                                    No gallery images found
+                                </h3>
+
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                    There are no gallery images in this category yet.
+                                </p>
+                            </div>
+                        )}
+
+                    {/* Dynamic Gallery Grid */}
+
+                    {!galleryLoading &&
+                        !galleryError &&
+                        visibleGalleryImages.length >
+                        0 && (
+                            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-4">
+                                {visibleGalleryImages.map((item) =>
+                                (<figure
+                                    key={item.id}
+                                    className="group overflow-hidden rounded-lg bg-muted" >
+                                    <div className="relative h-[260px] w-full overflow-hidden">
+                                        <img src={item.image}
+                                            alt={item.title || "Deco Galleria project"}
+                                            loading="lazy" className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105" />
+                                    </div>
+                                </figure>
+                                ))
+                                }
+                            </div>
+                        )}
+                </div>
+            </section>
+{/* SECTION 1: FINISHED INSTALLATIONS SHOWCASE */}
+
+            <section className="section-space">
+                <div className="site-container">
+
                     <div className="mb-8">
-                        <p className="eyebrow">Finished Work</p>
+                        <p className="eyebrow">
+                            Finished Work
+                        </p>
+
                         <h2 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
                             Completed Installations
                         </h2>
+
                         <p className="mt-2 text-muted-foreground">
                             Filter through our recent residential and commercial project releases.
                         </p>
                     </div>
 
-                    {/* Category Filter Tabs */}
+                    {/* Existing Project Categories */}
+
                     <div className="flex flex-wrap items-center justify-start gap-2 border-b border-border pb-6">
                         {categories.map((cat) => (
                             <button
                                 key={cat}
-                                onClick={() => setActiveCategory(cat)}
+                                onClick={() =>
+                                    setActiveCategory(cat)
+                                }
                                 className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded-md ${activeCategory === cat
-                                        ? "bg-primary text-primary-foreground shadow-sm"
-                                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                                     }`}
                             >
                                 {cat}
@@ -294,6 +608,7 @@ function GalleryPage() {
                     </div>
 
                     {/* Animated Project Grid */}
+
                     <motion.div
                         layout
                         className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
@@ -303,11 +618,25 @@ function GalleryPage() {
                                 <motion.div
                                     key={item.id}
                                     layout
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                                    onClick={() => setSelectedProject(item)}
+                                    initial={{
+                                        opacity: 0,
+                                        scale: 0.9,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                    }}
+                                    exit={{
+                                        opacity: 0,
+                                        scale: 0.9,
+                                    }}
+                                    transition={{
+                                        duration: 0.35,
+                                        ease: "easeInOut",
+                                    }}
+                                    onClick={() =>
+                                        setSelectedProject(item)
+                                    }
                                     className="group cursor-pointer overflow-hidden border border-border bg-card transition-all hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between"
                                 >
                                     <div>
@@ -318,6 +647,7 @@ function GalleryPage() {
                                                 loading="lazy"
                                                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                             />
+
                                             <span className="absolute top-3 left-3 bg-black/75 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
                                                 {item.category}
                                             </span>
@@ -325,14 +655,19 @@ function GalleryPage() {
 
                                         <div className="p-5">
                                             <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                                <span>{item.location}</span>
+                                                <span>
+                                                    {item.location}
+                                                </span>
+
                                                 <span className="font-semibold text-primary">
                                                     {item.sqft}
                                                 </span>
                                             </div>
+
                                             <h3 className="text-lg font-bold text-card-foreground group-hover:text-primary transition-colors">
                                                 {item.title}
                                             </h3>
+
                                             <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
                                                 {item.description}
                                             </p>
@@ -341,8 +676,10 @@ function GalleryPage() {
 
                                     <div className="px-5 pb-5 pt-2 border-t border-border/50 bg-muted/20 flex items-center justify-between">
                                         <span className="text-[11px] font-medium text-muted-foreground">
-                                            Completed {item.completionDate}
+                                            Completed{" "}
+                                            {item.completionDate}
                                         </span>
+
                                         <span className="text-xs font-bold text-primary">
                                             View Details →
                                         </span>
@@ -354,163 +691,165 @@ function GalleryPage() {
                 </div>
             </section>
 
-            {/* SECTION 2: INTERACTIVE BEFORE & AFTER COMPARISON */}
-            <section className="section-space border-t border-border bg-secondary/10">
+            {/* SECTION 4: BEFORE & AFTER CASE STUDIES */}
+
+            <section className="section-space border-t border-border bg-secondary/30">
                 <div className="site-container">
+
                     <div className="max-w-2xl">
-                        <p className="eyebrow">Interactive Spotlight</p>
+                        <p className="eyebrow">
+                            Case Studies
+                        </p>
+
                         <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                            Drag to see the transformation
+                            Proven results across Southern California
                         </h2>
+
                         <p className="mt-3 text-muted-foreground">
-                            Move the slider left or right to compare raw wall surfaces with
-                            finished Deco Galleria installations.
+                            Explore how property owners elevated modern aesthetics while reducing long-term surface maintenance.
                         </p>
                     </div>
 
-                    <div className="mt-8">
-                        <BeforeAfterSlider
-                            beforeImage={newer}
-                            afterImage={showcaseImage}
-                            beforeAlt="Plain drywall living room wall before WPC installation"
-                            afterAlt="Finished WPC slatted accent wall with ambient lighting"
-                        />
-                    </div>
-                </div>
-            </section>
+                    <div className="mt-10 grid gap-8 md:grid-cols-2">
+                        {transformations.map(
+                            (item) => (
+                                <motion.div
+                                    key={item.id}
+                                    initial={{
+                                        opacity: 0,
+                                        y: 20,
+                                    }}
+                                    whileInView={{
+                                        opacity: 1,
+                                        y: 0,
+                                    }}
+                                    viewport={{
+                                        once: true,
+                                    }}
+                                    transition={{
+                                        duration: 0.4,
+                                    }}
+                                    className="flex flex-col border border-border bg-card shadow-sm overflow-hidden"
+                                >
+                                    <div
+                                        className=" bg-border cursor-pointer group relative"
+                                        onClick={() =>
+                                            setSelectedTransformation(
+                                                item
+                                            )
+                                        }
+                                    >
+                                        {/* <div className="relative aspect-[4/3] bg-muted overflow-hidden">
+                                            <img
+                                                src={
+                                                    item.beforeImg
+                                                }
+                                                alt={`${item.title} Before`}
+                                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                            />
 
-            <section className="section-space">
-                <div className="site-container">
-                    <div className="flex gap-2 overflow-x-auto pb-3">
-                        {["All", "Living Room", "Bedroom", "Kitchen", "Exterior", "Commercial"].map((item) =>
-                            <Button key={item} variant={filter === item ? "default" : "outline"} onClick={() => setFilter(item)}>{item}</Button>)}
-                    </div>
-                    <div className="mt-8 grid gap-5 md:grid-cols-2">
-                        {visible.map((item, index) =>
-                            <figure key={item.title} className={`${index === 0 && visible.length > 2 ? "md:col-span-2" : ""} group overflow-hidden bg-muted`}>
-                                <div className="overflow-hidden"><img src={item.image} alt={item.title} loading="lazy" className={`w-full object-cover transition-transform duration-700 group-hover:scale-105 ${index === 0 && visible.length > 2 ? "aspect-[2/1]" : "aspect-[4/3]"}`} /></div>
-                                {/* <figcaption className="flex items-center justify-between border border-t-0 border-border bg-background p-5">
-                                    {/* <div>
-                                        <p className="text-xs font-bold uppercase text-primary">
-                                            {item.category}
-                                        </p>
-                                        <h2 className="mt-1 text-xl font-bold">
-                                            {item.title}
-                                        </h2>
-                                    </div> */}
-                                    {/* <ArrowRight /> 
-                                </figcaption> */}
-                            </figure>
+                                            <span className="absolute bottom-2 left-2 bg-black/75 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
+                                                Before
+                                            </span>
+                                        </div> */}
+
+                                        <div className="relative  bg-muted overflow-hidden">
+                                            <img
+                                                src={
+                                                    item.afterImg
+                                                }
+                                                alt={`${item.title} After`}
+                                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                            />
+
+
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6 flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                                                <span>
+                                                    {
+                                                        item.location
+                                                    }
+                                                </span>
+
+                                                <span className="font-semibold text-primary">
+                                                    {
+                                                        item.material
+                                                    }
+                                                </span>
+                                            </div>
+
+                                            <h3 className="text-xl font-bold text-card-foreground">
+                                                {item.title}
+                                            </h3>
+
+                                            <div className="mt-4 space-y-3 text-xs leading-relaxed">
+                                                <div className="p-2.5 rounded bg-muted/50 border border-border/50">
+                                                    <span className="font-bold text-destructive uppercase tracking-wide block mb-0.5">
+                                                        Original State:
+                                                    </span>
+
+                                                    <p className="text-muted-foreground">
+                                                        {
+                                                            item.beforeDesc
+                                                        }
+                                                    </p>
+                                                </div>
+
+                                                <div className="p-2.5 rounded bg-primary/5 border border-primary/20">
+                                                    <span className="font-bold text-primary uppercase tracking-wide block mb-0.5">
+                                                        The Result:
+                                                    </span>
+
+                                                    <p className="text-foreground">
+                                                        {
+                                                            item.afterDesc
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={() =>
+                                                setSelectedTransformation(
+                                                    item
+                                                )
+                                            }
+                                            className="mt-6 text-xs font-bold uppercase tracking-wider text-primary hover:underline text-left"
+                                        >
+                                            View High-Res Comparison →
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )
                         )}
                     </div>
                 </div>
             </section>
 
-            {/* SECTION 3: BEFORE & AFTER CASE STUDIES GRID */}
-            <section className="section-space border-t border-border bg-secondary/30">
-                <div className="site-container">
-                    <div className="max-w-2xl">
-                        <p className="eyebrow">Case Studies</p>
-                        <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                            Proven results across Southern California
-                        </h2>
-                        <p className="mt-3 text-muted-foreground">
-                            Explore how property owners elevated modern aesthetics while
-                            reducing long-term surface maintenance.
-                        </p>
-                    </div>
+            {/* PROJECT DETAILS DIALOG */}
 
-                    <div className="mt-10 grid gap-8 md:grid-cols-2">
-                        {transformations.map((item) => (
-                            <motion.div
-                                key={item.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.4 }}
-                                className="flex flex-col border border-border bg-card shadow-sm overflow-hidden"
-                            >
-                                <div
-                                    className="grid grid-cols-2 gap-0.5 bg-border cursor-pointer group relative"
-                                    onClick={() => setSelectedTransformation(item)}
-                                >
-                                    <div className="relative aspect-[4/3] bg-muted overflow-hidden">
-                                        <img
-                                            src={item.beforeImg}
-                                            alt={`${item.title} Before`}
-                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                        />
-                                        <span className="absolute bottom-2 left-2 bg-black/75 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
-                                            Before
-                                        </span>
-                                    </div>
-                                    <div className="relative aspect-[4/3] bg-muted overflow-hidden">
-                                        <img
-                                            src={item.afterImg}
-                                            alt={`${item.title} After`}
-                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                        />
-                                        <span className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
-                                            After
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="p-6 flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                            <span>{item.location}</span>
-                                            <span className="font-semibold text-primary">
-                                                {item.material}
-                                            </span>
-                                        </div>
-                                        <h3 className="text-xl font-bold text-card-foreground">
-                                            {item.title}
-                                        </h3>
-
-                                        <div className="mt-4 space-y-3 text-xs leading-relaxed">
-                                            <div className="p-2.5 rounded bg-muted/50 border border-border/50">
-                                                <span className="font-bold text-destructive uppercase tracking-wide block mb-0.5">
-                                                    Original State:
-                                                </span>
-                                                <p className="text-muted-foreground">
-                                                    {item.beforeDesc}
-                                                </p>
-                                            </div>
-                                            <div className="p-2.5 rounded bg-primary/5 border border-primary/20">
-                                                <span className="font-bold text-primary uppercase tracking-wide block mb-0.5">
-                                                    The Result:
-                                                </span>
-                                                <p className="text-foreground">{item.afterDesc}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <button
-                                        onClick={() => setSelectedTransformation(item)}
-                                        className="mt-6 text-xs font-bold uppercase tracking-wider text-primary hover:underline text-left"
-                                    >
-                                        View High-Res Comparison →
-                                    </button>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* LIGHTBOX DIALOG: PROJECT DETAILS */}
             <Dialog
                 open={!!selectedProject}
-                onOpenChange={() => setSelectedProject(null)}
+                onOpenChange={() =>
+                    setSelectedProject(null)
+                }
             >
                 <DialogContent className="max-w-3xl overflow-hidden p-0">
                     {selectedProject && (
                         <div>
                             <div className="relative bg-black">
                                 <img
-                                    src={selectedProject.image}
-                                    alt={selectedProject.title}
+                                    src={
+                                        selectedProject.image
+                                    }
+                                    alt={
+                                        selectedProject.title
+                                    }
                                     className="max-h-[60vh] w-full object-contain mx-auto"
                                 />
                             </div>
@@ -518,32 +857,58 @@ function GalleryPage() {
                             <div className="p-6 bg-background border-t border-border">
                                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground mb-2">
                                     <span className="bg-primary/10 text-primary font-bold px-2.5 py-0.5 rounded">
-                                        {selectedProject.category}
+                                        {
+                                            selectedProject.category
+                                        }
                                     </span>
+
                                     <span>
-                                        {selectedProject.location} • {selectedProject.sqft}
+                                        {
+                                            selectedProject.location
+                                        }{" "}
+                                        •{" "}
+                                        {
+                                            selectedProject.sqft
+                                        }
                                     </span>
                                 </div>
 
                                 <DialogTitle className="text-xl font-bold">
-                                    {selectedProject.title}
+                                    {
+                                        selectedProject.title
+                                    }
                                 </DialogTitle>
 
                                 <DialogDescription className="mt-3 text-sm text-foreground leading-relaxed">
-                                    {selectedProject.description}
+                                    {
+                                        selectedProject.description
+                                    }
                                 </DialogDescription>
 
                                 <div className="mt-4 pt-4 border-t border-border">
                                     <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
                                         Key Project Features
                                     </p>
+
                                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-foreground">
-                                        {selectedProject.highlights.map((feat, idx) => (
-                                            <li key={idx} className="flex items-center gap-1.5">
-                                                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                                {feat}
-                                            </li>
-                                        ))}
+                                        {selectedProject.highlights.map(
+                                            (
+                                                feat,
+                                                idx
+                                            ) => (
+                                                <li
+                                                    key={
+                                                        idx
+                                                    }
+                                                    className="flex items-center gap-1.5"
+                                                >
+                                                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                                    {
+                                                        feat
+                                                    }
+                                                </li>
+                                            )
+                                        )}
                                     </ul>
                                 </div>
                             </div>
@@ -552,10 +917,17 @@ function GalleryPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* LIGHTBOX DIALOG: TRANSFORMATION COMPARISON */}
+            {/* TRANSFORMATION DIALOG */}
+
             <Dialog
-                open={!!selectedTransformation}
-                onOpenChange={() => setSelectedTransformation(null)}
+                open={
+                    !!selectedTransformation
+                }
+                onOpenChange={() =>
+                    setSelectedTransformation(
+                        null
+                    )
+                }
             >
                 <DialogContent className="max-w-4xl overflow-hidden p-0">
                     {selectedTransformation && (
@@ -563,20 +935,27 @@ function GalleryPage() {
                             <div className="grid grid-cols-2 gap-1 bg-black">
                                 <div className="relative">
                                     <img
-                                        src={selectedTransformation.beforeImg}
+                                        src={
+                                            selectedTransformation.beforeImg
+                                        }
                                         alt={`${selectedTransformation.title} Before`}
                                         className="max-h-[60vh] w-full object-cover"
                                     />
+
                                     <span className="absolute top-3 left-3 bg-black/80 text-white text-xs font-bold uppercase px-2.5 py-1 rounded">
                                         Before
                                     </span>
                                 </div>
+
                                 <div className="relative">
                                     <img
-                                        src={selectedTransformation.afterImg}
+                                        src={
+                                            selectedTransformation.afterImg
+                                        }
                                         alt={`${selectedTransformation.title} After`}
                                         className="max-h-[60vh] w-full object-cover"
                                     />
+
                                     <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-bold uppercase px-2.5 py-1 rounded">
                                         After
                                     </span>
@@ -585,14 +964,25 @@ function GalleryPage() {
 
                             <div className="p-6 bg-background border-t border-border">
                                 <DialogTitle className="text-xl font-bold">
-                                    {selectedTransformation.title}
+                                    {
+                                        selectedTransformation.title
+                                    }
                                 </DialogTitle>
+
                                 <DialogDescription className="text-xs text-muted-foreground mt-1">
-                                    {selectedTransformation.location} •{" "}
-                                    {selectedTransformation.material}
+                                    {
+                                        selectedTransformation.location
+                                    }{" "}
+                                    •{" "}
+                                    {
+                                        selectedTransformation.material
+                                    }
                                 </DialogDescription>
+
                                 <p className="mt-3 text-sm text-foreground">
-                                    {selectedTransformation.afterDesc}
+                                    {
+                                        selectedTransformation.afterDesc
+                                    }
                                 </p>
                             </div>
                         </div>
@@ -605,7 +995,10 @@ function GalleryPage() {
     );
 }
 
-// Reusable Interactive Before/After Slider Component
+/* ============================================
+   BEFORE / AFTER SLIDER
+============================================ */
+
 function BeforeAfterSlider({
     beforeImage,
     afterImage,
@@ -617,7 +1010,8 @@ function BeforeAfterSlider({
     beforeAlt: string;
     afterAlt: string;
 }) {
-    const [sliderPos, setSliderPos] = useState(50);
+    const [sliderPos, setSliderPos] =
+        useState(50);
 
     return (
         <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg border border-border select-none">
@@ -626,19 +1020,28 @@ function BeforeAfterSlider({
                 alt={afterAlt}
                 className="absolute inset-0 h-full w-full object-cover"
             />
+
             <span className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold uppercase px-3 py-1 rounded shadow">
                 After
             </span>
 
             <div
                 className="absolute inset-0 overflow-hidden"
-                style={{ clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)` }}
+                style={{
+                    clipPath: `polygon(
+                        0 0,
+                        ${sliderPos}% 0,
+                        ${sliderPos}% 100%,
+                        0 100%
+                    )`,
+                }}
             >
                 <img
                     src={beforeImage}
                     alt={beforeAlt}
                     className="absolute inset-0 h-full w-full object-cover"
                 />
+
                 <span className="absolute top-4 left-4 bg-black/80 text-white text-xs font-bold uppercase px-3 py-1 rounded shadow">
                     Before
                 </span>
@@ -646,7 +1049,9 @@ function BeforeAfterSlider({
 
             <div
                 className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize shadow-[0_0_10px_rgba(0,0,0,0.5)]"
-                style={{ left: `${sliderPos}%` }}
+                style={{
+                    left: `${sliderPos}%`,
+                }}
             >
                 <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-9 w-9 rounded-full bg-white text-black font-bold flex items-center justify-center shadow-md text-xs">
                     ↔
@@ -658,7 +1063,11 @@ function BeforeAfterSlider({
                 min="0"
                 max="100"
                 value={sliderPos}
-                onChange={(e) => setSliderPos(Number(e.target.value))}
+                onChange={(e) =>
+                    setSliderPos(
+                        Number(e.target.value)
+                    )
+                }
                 className="absolute inset-0 opacity-0 cursor-ew-resize w-full h-full"
             />
         </div>

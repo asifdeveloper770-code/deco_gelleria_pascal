@@ -91,10 +91,10 @@ export function UvMarblePage() {
           <div className="max-w-2xl">
             <p className="eyebrow">Product showcase</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              Explore UV Marble Finishes & Installations
+              Explore WPC Indoor Finishes & Installations
             </h2>
             <p className="mt-3 text-muted-foreground">
-              See how our UV marble sheets deliver continuous, large-format stone elegance across luxury residential and high-traffic commercial spaces.
+              See how our slatted indoor wall panels bring depth, warm texture, and continuous architectural rhythm to living rooms, bedrooms, and commercial spaces.
             </p>
           </div>
 
@@ -104,14 +104,12 @@ export function UvMarblePage() {
             </div>
           ) : error ? (
             <div className="mt-10 p-4 text-center text-sm text-destructive">
-              Failed to load UV marble products.
+              Failed to load indoor products.
             </div>
           ) : products.length === 0 ? (
             <div className="mt-10 flex h-48 flex-col items-center justify-center text-center">
               <Package className="h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">
-                No UV marble category products found in database.
-              </p>
+              <p className="mt-2 text-sm text-muted-foreground">No indoor category products found.</p>
             </div>
           ) : (
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -138,11 +136,11 @@ export function UvMarblePage() {
                   </div>
                   {/* <div className="p-4">
                     {product.categories?.name && (
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                         {product.categories.name}
                       </p>
                     )}
-                    <h3 className="mt-1 text-sm font-bold text-card-foreground">{product.name}</h3>
+                    <h3 className="mt-1 text-sm font-bold text-foreground">{product.name}</h3>
                     <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                       ${Number(product.price).toFixed(2)}
                     </p>

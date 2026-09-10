@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { AdminLayout } from "@/components/admin-layout";
-import { Loader2, Mail, MessageSquare, Trash2, Eye, X } from "lucide-react";
+import { Loader2, Mail, MessageSquare, Trash2, Eye, X, Phone, Tag } from "lucide-react";
 
 export const Route = createFileRoute("/admin/contacts")({
   component: AdminContactsPage,
@@ -13,26 +13,41 @@ interface ContactInquiry {
   id: string;
   name: string;
   email: string;
-  subject: string;
-  message?: string;
+  phone: string | null;
+  category_id: string | null;
+  project_details: string;
   created_at: string;
+  categories: {
+    name: string;
+  } | null;
 }
 
 function AdminContactsPage() {
   const queryClient = useQueryClient();
   const [selectedInquiry, setSelectedInquiry] = useState<ContactInquiry | null>(null);
 
-  // Fetch Contact Inquiries from Supabase
+  // Fetch Contact Inquiries with Joined Category details from Supabase
   const { data: contacts, isLoading } = useQuery({
     queryKey: ["admin_contacts"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("contacts")
-        .select("*")
+        .select(`
+          id,
+          name,
+          email,
+          phone,
+          category_id,
+          project_details,
+          created_at,
+          categories (
+            name
+          )
+        `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as ContactInquiry[];
+      return data as unknown as ContactInquiry[];
     },
   });
 
@@ -78,9 +93,16 @@ function AdminContactsPage() {
                 className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/40 p-4 transition-colors hover:border-slate-700"
               >
                 <div className="min-w-0 flex-1 pr-4">
-                  <h4 className="truncate text-sm font-bold text-white">{c.subject}</h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className="truncate text-sm font-bold text-white">{c.name}</h4>
+                    {c.categories?.name && (
+                      <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400 border border-emerald-500/20">
+                        {c.categories.name}
+                      </span>
+                    )}
+                  </div>
                   <p className="mt-0.5 text-xs text-slate-400">
-                    {c.name} • <span className="text-slate-500">{c.email}</span>
+                    {c.email} {c.phone && `• ${c.phone}`}
                   </p>
                 </div>
 
@@ -118,9 +140,17 @@ function AdminContactsPage() {
             <div className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-xl">
               <div className="flex items-start justify-between border-b border-slate-800 pb-4">
                 <div>
-                  <h3 className="text-base font-bold text-white">{selectedInquiry.subject}</h3>
-                  <p className="mt-1 text-xs text-slate-400">
-                    From {selectedInquiry.name} ({selectedInquiry.email})
+                  <h3 className="text-base font-bold text-white">{selectedInquiry.name}</h3>
+                  <p className="mt-1 text-xs text-slate-400 flex items-center gap-2">
+                    <span>{selectedInquiry.email}</span>
+                    {selectedInquiry.phone && (
+                      <>
+                        <span>•</span>
+                        <span className="flex items-center gap-1 text-slate-300">
+                          <Phone className="h-3 w-3 text-emerald-400" /> {selectedInquiry.phone}
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
                 <button
@@ -131,20 +161,32 @@ function AdminContactsPage() {
                 </button>
               </div>
 
-              <div className="my-6 space-y-2">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                  Message Body
-                </span>
-                <p className="rounded-lg border border-slate-800/80 bg-slate-950/50 p-4 text-xs leading-relaxed text-slate-300">
-                  {selectedInquiry.message || "No message body provided."}
-                </p>
+              <div className="my-5 space-y-4">
+                {selectedInquiry.categories?.name && (
+                  <div>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block mb-1">
+                      Material Interest
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-slate-800 px-2.5 py-1 text-xs font-medium text-emerald-400 border border-slate-700">
+                      <Tag className="h-3 w-3" />
+                      {selectedInquiry.categories.name}
+                    </span>
+                  </div>
+                )}
+
+                <div>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block mb-1">
+                    Project Details
+                  </span>
+                  <p className="rounded-lg border border-slate-800/80 bg-slate-950/50 p-4 text-xs leading-relaxed text-slate-300 whitespace-pre-wrap">
+                    {selectedInquiry.project_details || "No project details provided."}
+                  </p>
+                </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 pt-2 border-t border-slate-800">
                 <a
-                  href={`mailto:${selectedInquiry.email}?subject=Re: ${encodeURIComponent(
-                    selectedInquiry.subject
-                  )}`}
+                  href={`mailto:${selectedInquiry.email}?subject=Re: Project Inquiry - Deco Galleria`}
                   className="flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400"
                 >
                   <Mail className="h-4 w-4" /> Reply via Email
