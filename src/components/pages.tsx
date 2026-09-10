@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, Droplets, Hammer, Leaf, MapPin, Phone, Recycle, Shield, Sparkles, Sun, Wrench } from "lucide-react";
+import { ArrowRight, CheckCircle2, Download, Droplets, Hammer, Leaf, MapPin, Phone, Recycle, Shield, Sparkles, Sun, Wrench } from "lucide-react";
 import heroImage from "@/assets/deco-hero.jpg";
 import bedroomImage from "@/assets/wpc-bedroom.jpg";
 import kitchenImage from "@/assets/wpc-kitchen.jpg";
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CTA, FeatureStrip, FinishSelector, PageIntro, ProductShowcase } from "@/components/content-blocks";
 import { Field } from "@/components/site-shell";
+import decoPdf from "@/assets/pdf/DECO GALLERIA INC BIO  About Page.pdf";
+
 
 const products = [
   { title: "WPC Panels", text: "Warm, dimensional slat walls for interiors and exterior-rated applications.", image: heroImage, to: "/wpc-panels" as const },
@@ -93,6 +95,11 @@ export function AboutPage() {
           <Button asChild className="mt-7">
             <Link to="/contact">Meet us in Sun Valley <ArrowRight /></Link>
           </Button>
+          <Button variant="outline" asChild className="ml-5">
+            <a href={decoPdf} download="DECO_GALLERIA_INC_BIO.pdf" target="_blank" rel="noopener noreferrer">
+              Download Catalog PDF <Download className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
         </div>
       </div>
     </section>
@@ -159,7 +166,7 @@ export function MarblePage() {
       />
 
       <FinishSelector title="Compare marble looks" />
-      
+
       <CTA />
     </>
   );
