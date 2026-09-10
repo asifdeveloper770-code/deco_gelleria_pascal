@@ -12,11 +12,16 @@ import showcaseImage from "@/assets/deco-galleria-logo.png";
 import newer from "@/assets/uv-marble.jpg";
 import before from "@/assets/Before_new.png";
 import after from "@/assets/After_new.png";
-// import heroImage from "@/assets/deco-hero.jpg";
-// import bedroomImage from "@/assets/wpc-bedroom.jpg";
-// import kitchenImage from "@/assets/wpc-kitchen.jpg";
-// import stoneImage from "@/assets/pu-stone.jpg";
-// import marbleImage from "@/assets/uv-marble.jpg";
+import living from "@/assets/Living Room Feature Wall Revamp.jpg";
+import master from "@/assets/Master Suite Bathroom Remodel.jpg";
+import premier from "@/assets/Perimeter Privacy Fence Upgrade.png";
+import commercial from "@/assets/Commercial Hotel Lobby Reception Feature.jpg";
+import executive from "@/assets/Executive Conference Room Media Backdrop.jpg";
+import modern from "@/assets/Modern Minimalist Perimeter Privacy Barrier.jpg";
+import luxury from "@/assets/Luxury Modern Living Accent Wall.jpg";
+import resident from "@/assets/Residential Poolside Patio Terrace.jpg";
+import spa from "@/assets/Spa & Wellness Wet Room Wall Cladding.jpg";
+import poolside from "@/assets/Poolside Terrace Transformation.jpg";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -60,7 +65,7 @@ interface TransformationItem {
     beforeDesc: string;
     afterDesc: string;
     beforeImg: string;
-    afterImg: string;
+    // afterImg: string;
 }
 
 const categories: ProjectCategory[] = [
@@ -79,7 +84,7 @@ const projects: ProjectItem[] = [
         location: "Beverly Hills, CA",
         completionDate: "August 2026",
         sqft: "450 sq. ft.",
-        image: showcaseImage,
+        image: luxury,
         description:
             "Fluted walnut WPC wall panels paired with integrated warm LED strip channels to frame an ultra-thin TV mount setup.",
         highlights: [
@@ -95,7 +100,7 @@ const projects: ProjectItem[] = [
         location: "Downtown Los Angeles, CA",
         completionDate: "July 2026",
         sqft: "1,200 sq. ft.",
-        image: showcaseImage,
+        image: commercial,
         description:
             "High-gloss Calacatta Gold UV marble sheets seamlessly wrapped around curved reception desks and main backdrops.",
         highlights: [
@@ -111,7 +116,7 @@ const projects: ProjectItem[] = [
         location: "Encino, CA",
         completionDate: "June 2026",
         sqft: "850 sq. ft.",
-        image: showcaseImage,
+        image: resident,
         description:
             "Co-extruded composite decking in Teak with hidden fastener clip system and integrated step lighting.",
         highlights: [
@@ -127,7 +132,7 @@ const projects: ProjectItem[] = [
         location: "Pasadena, CA",
         completionDate: "August 2026",
         sqft: "180 Linear ft.",
-        image: showcaseImage,
+        image: modern,
         description:
             "Charcoal Slate composite fencing with aluminum posts creating a clean, modern security enclosure.",
         highlights: [
@@ -143,7 +148,7 @@ const projects: ProjectItem[] = [
         location: "Irvine, CA",
         completionDate: "May 2026",
         sqft: "320 sq. ft.",
-        image: showcaseImage,
+        image: executive,
         description:
             "MDF acoustic slatted timber panels behind corporate teleconferencing displays for enhanced voice clarity.",
         highlights: [
@@ -159,7 +164,7 @@ const projects: ProjectItem[] = [
         location: "Newport Beach, CA",
         completionDate: "June 2026",
         sqft: "600 sq. ft.",
-        image: showcaseImage,
+        image: spa,
         description:
             "Nero Marquina black marble pattern UV sheets installed in high-humidity shower and steam room enclosures.",
         highlights: [
@@ -180,8 +185,8 @@ const transformations: TransformationItem[] = [
             "Dated, plain painted drywall with visible cables and dull ambient lighting.",
         afterDesc:
             "Warm, textured slatted wall with integrated LED accent lighting, hiding media cabling and adding architectural depth.",
-        beforeImg: showcaseImage,
-        afterImg: showcaseImage,
+        beforeImg: living,
+        // afterImg: showcaseImage,
     },
     {
         id: "bathroom-uv-marble",
@@ -192,8 +197,8 @@ const transformations: TransformationItem[] = [
             "Strained grout lines, discolored ceramic tile, and moisture-damaged drywall corners.",
         afterDesc:
             "Seamless, high-gloss floor-to-ceiling marble visual with zero grout lines and 100% waterproof protection.",
-        beforeImg: showcaseImage,
-        afterImg: showcaseImage,
+        beforeImg: master,
+        // afterImg: showcaseImage,
     },
     {
         id: "patio-wpc-fencing",
@@ -204,8 +209,8 @@ const transformations: TransformationItem[] = [
             "Weathered, splintered natural wood fence requiring annual painting and termite treatment.",
         afterDesc:
             "Ultra-clean horizontal composite barrier engineered to withstand California heat without fading or splitting.",
-        beforeImg: showcaseImage,
-        afterImg: showcaseImage,
+        beforeImg: premier,
+        // afterImg: showcaseImage,
     },
     {
         id: "backyard-decking",
@@ -216,8 +221,8 @@ const transformations: TransformationItem[] = [
             "Cracked concrete patio slab that absorbed sun heat and became slippery when wet.",
         afterDesc:
             "Barefoot-friendly, slip-resistant composite decking elevated with hidden stainless steel clips.",
-        beforeImg: showcaseImage,
-        afterImg: showcaseImage,
+        beforeImg: poolside,
+        // afterImg: showcaseImage,
     },
 ];
 
@@ -753,10 +758,10 @@ function GalleryPage() {
                                             </span>
                                         </div> */}
 
-                                        <div className="relative  bg-muted overflow-hidden">
+                                        <div className="relative aspect-[4/3]  bg-muted overflow-hidden">
                                             <img
                                                 src={
-                                                    item.afterImg
+                                                    item.beforeImg
                                                 }
                                                 alt={`${item.title} After`}
                                                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -799,7 +804,7 @@ function GalleryPage() {
                                                     </p>
                                                 </div>
 
-                                                <div className="p-2.5 rounded bg-primary/5 border border-primary/20">
+                                                {/* <div className="p-2.5 rounded bg-primary/5 border border-primary/20">
                                                     <span className="font-bold text-primary uppercase tracking-wide block mb-0.5">
                                                         The Result:
                                                     </span>
@@ -809,7 +814,7 @@ function GalleryPage() {
                                                             item.afterDesc
                                                         }
                                                     </p>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
 
@@ -932,10 +937,10 @@ function GalleryPage() {
                 <DialogContent className="max-w-4xl overflow-hidden p-0">
                     {selectedTransformation && (
                         <div>
-                            <div className="grid grid-cols-2 gap-1 bg-black">
+                            <div className=" gap-1">
                                 <div className="relative">
                                     <img
-                                        src={
+                                        src={ 
                                             selectedTransformation.beforeImg
                                         }
                                         alt={`${selectedTransformation.title} Before`}
@@ -947,7 +952,7 @@ function GalleryPage() {
                                     </span>
                                 </div>
 
-                                <div className="relative">
+                                {/* <div className="relative">
                                     <img
                                         src={
                                             selectedTransformation.afterImg
@@ -959,7 +964,7 @@ function GalleryPage() {
                                     <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-bold uppercase px-2.5 py-1 rounded">
                                         After
                                     </span>
-                                </div>
+                                </div> */}
                             </div>
 
                             <div className="p-6 bg-background border-t border-border">

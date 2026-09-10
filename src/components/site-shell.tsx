@@ -292,8 +292,9 @@ export function QuoteDialog({ open, onOpenChange }: QuoteDialogProps) {
       if (error) throw error;
       
       // Auto-select first category if available
-      if (data && data.length > 0 && !categoryId) {
-        setCategoryId(data[0].id);
+      const firstCategory = data?.[0];
+      if (firstCategory && !categoryId) {
+        setCategoryId(firstCategory.id);
       }
       
       return data as Category[];
