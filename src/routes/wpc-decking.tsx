@@ -82,7 +82,7 @@ export function WpcDeckingPage() {
         ]}
       />
 
-      <FinishSelector title="Explore decking colors & woodgrain finishes" />
+      {/* <FinishSelector title="Explore decking colors & woodgrain finishes" /> */}
 
       {/* Filtered Decking Product Gallery Section */}
       <section className="section-space border-t border-border bg-secondary/30">

@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { CTA, FeatureStrip, FinishSelector, PageIntro, ProductShowcase } from "@/components/content-blocks";
 import { Field } from "@/components/site-shell";
 import decoPdf from "@/assets/pdf/DECO GALLERIA INC BIO  About Page.pdf";
+import ss from "@/assets/Screenshot.png"
 
 
 const products = [
@@ -88,18 +89,23 @@ export function AboutPage() {
       <div className="site-container grid items-center gap-12 lg:grid-cols-2">
         <img src={heroImage} alt="Natural wood panel installation" className="aspect-[4/3] w-full object-cover shadow-soft" />
         <div>
-          <p className="eyebrow">Led by Pascal Angelini</p>
-          <h2 className="mt-4 text-4xl font-bold">A hands-on approach to every project</h2>
-          <p className="mt-5 leading-8 text-muted-foreground">From a single feature wall to a multi-room or commercial specification, Pascal and the Deco Galleria team help clients compare finishes, understand applications, and select materials with confidence.</p>
-          <p className="mt-4 leading-8 text-muted-foreground">Based in Sun Valley, we serve Los Angeles, Orange County, and surrounding communities with local knowledge and a dependable source for modern surface solutions.</p>
-          <Button asChild className="mt-7">
-            <Link to="/contact">Meet us in Sun Valley <ArrowRight /></Link>
-          </Button>
-          <Button variant="outline" asChild className="ml-5">
-            <a href={decoPdf} download="DECO_GALLERIA_INC_BIO.pdf" target="_blank" rel="noopener noreferrer">
-              Download Catalog PDF <Download className="ml-2 h-4 w-4" />
-            </a>
-          </Button>
+          {/* <p className="eyebrow">Led by Pascal Angelini</p> */}
+          <h2 className="mt-7 text-4xl font-bold">About Us</h2>
+          <p className="leading-8 text-muted-foreground">Your go-to destination for high-quality WPC panels, PU stone and UV marble sheets! We offer durable, stylish, and eco-friendly solutions for modern interior and exterior. Elevate your space
+            with our premium designs today! We specialize in commercial and residential projects, servicing
+            Los Angeles and Orange County and the surrounding areas.</p>
+          <p className="mt-2 leading-8 text-muted-foreground">At Deco Galleria, we understand that each person has their own unique style and vision for their
+            space. That’s why we offer a premium selection of WPC panels indoor and outdoor, including
+            UV marble sheets and PU stone to bring elegance, durability, and sophistication to any interior
+            or exterior. Whether you're designing a home, office, or commercial space, our high-quality
+            materials ensure </p>
+
+          <img src={ss}
+            alt=""
+          className=""
+          />
+          <p className="ml-4 font-semibold">Owner Deco Galleria Inc.</p>
+
         </div>
       </div>
     </section>

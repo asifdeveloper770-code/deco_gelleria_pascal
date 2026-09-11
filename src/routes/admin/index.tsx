@@ -129,6 +129,7 @@ export function AdminDashboardPage() {
                   <th className="pb-3">Category</th>
                   <th className="pb-3">Area (sqft)</th>
                   <th className="pb-3">Date</th>
+                  
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/50">

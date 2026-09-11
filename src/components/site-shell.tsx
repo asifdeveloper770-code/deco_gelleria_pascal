@@ -52,12 +52,13 @@ const navItems: NavItem[] = [
   {
     label: "WPC Panels",
     children: [
-      { to: "/wpc-panels", label: "WPC Panels" },
-      { to: "/wpc-panels/indoor", label: "WPC Indoor Panels" },
+      // { to: "/wpc-panels", label: "WPC Panels" },
+      { to: "/wpc-panels/indoor", label: "WPC Interior Panels" },
       { to: "/wpc-panels/outdoor", label: "WPC Exterior Panels" },
-      { to: "/wpc-panels/acoustic", label: "Acoustic Panels" },
+     
     ],
   },
+   { to: "/wpc-panels/acoustic", label: "Acoustic Panels" },
   { to: "/pu-stone", label: "Fencing" },
   { to: "/uv-marble", label: "UV Marble" },
   { to: "/wpc-decking", label: "Decking" },

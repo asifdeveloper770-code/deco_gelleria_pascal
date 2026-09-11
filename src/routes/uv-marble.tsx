@@ -83,7 +83,7 @@ export function UvMarblePage() {
         ]}
       />
 
-      <FinishSelector title="Compare marble looks" />
+      {/* <FinishSelector title="Compare marble looks" /> */}
 
       {/* Filtered UV Marble Product Gallery Section */}
       <section className="section-space border-t border-border bg-secondary/30">
