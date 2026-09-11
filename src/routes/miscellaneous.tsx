@@ -4,6 +4,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Wrench, ShieldCheck, Truck, Ruler, Layers, Sparkles } from "lucide-react";
 import accessoryImage from "@/assets/deco-galleria-logo.png";
+import brushes from "@/assets/Brushed Metal Trim Profiles.jpg"
+import corner from "@/assets/Corner Finishing Accents.jpg"
+import custom from "@/assets/Custom Curved Trim Joints.jpg"
+import hidden from "@/assets/Hidden Stainless Clip Assembly.jpg"
+import panel from "@/assets/Panel Adhesive Application.jpg"
+import surface from "@/assets/Surface Care Kit (1).jpg"
+import { finished } from "stream";
 
 export const Route = createFileRoute("/miscellaneous")({
   head: () => ({
@@ -53,12 +60,12 @@ const accessoriesList = [
 ];
 
 const galleryImages = [
-  { src: accessoryImage, title: "Brushed Metal Trim Profiles", category: "Edge Trims" },
-  { src: accessoryImage, title: "Hidden Stainless Clip Assembly", category: "Hardware" },
-  { src: accessoryImage, title: "Panel Adhesive Application", category: "Installation" },
-  { src: accessoryImage, title: "Corner Finishing Accents", category: "Architectural Details" },
-  { src: accessoryImage, title: "Custom Curved Trim Joints", category: "Specialty Profiles" },
-  { src: accessoryImage, title: "Surface Care Kit", category: "Maintenance" },
+  { src: brushes, title: "Brushed Metal Trim Profiles", category: "Edge Trims" },
+  { src: hidden, title: "Hidden Stainless Clip Assembly", category: "Hardware" },
+  { src: panel, title: "Panel Adhesive Application", category: "Installation" },
+  { src: corner, title: "Corner Finishing Accents", category: "Architectural Details" },
+  { src: custom, title: "Custom Curved Trim Joints", category: "Specialty Profiles" },
+  { src: surface, title: "Surface Care Kit", category: "Maintenance" },
 ];
 
 const services = [

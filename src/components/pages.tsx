@@ -83,7 +83,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 }
 
 export function AboutPage() {
-  return <>
+  return <> 
     <PageIntro eyebrow="Our story" title="Materials with warmth. Service with intention." text="Deco Galleria Inc. helps homeowners and trade professionals shape memorable interiors and exteriors with expressive, practical surface materials." />
     <section className="section-space">
       <div className="site-container grid items-center gap-12 lg:grid-cols-2">
@@ -100,6 +100,11 @@ export function AboutPage() {
             or exterior. Whether you're designing a home, office, or commercial space, our high-quality
             materials ensure </p>
 
+
+          
+          {/* <p className="font-signature text-4xl text-white tracking-wide pt-2 select-none">
+              Pascal Angelini
+            </p> */}
           <img src={ss}
             alt=""
           className=""
