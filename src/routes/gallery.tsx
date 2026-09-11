@@ -21,10 +21,13 @@ import modern from "@/assets/Modern Minimalist Perimeter Privacy Barrier.jpg";
 import luxury from "@/assets/Luxury Modern Living Accent Wall.jpg";
 import resident from "@/assets/Residential Poolside Patio Terrace.jpg";
 import spa from "@/assets/Spa & Wellness Wet Room Wall Cladding.jpg";
+import bedroom from "@/assets/Master Bedroom Acoustic Headboard Feature Wall/IMG_0867.jpg";
 import poolside from "@/assets/Poolside Terrace Transformation.jpg";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+
+
 
 type Category = {
     id: string;
@@ -52,7 +55,8 @@ interface ProjectItem {
     location: string;
     completionDate: string;
     sqft: string;
-    image: string;
+    image: string; // Main / Cover Image
+    images: string[]; // Additional Gallery / Showcase Images
     description: string;
     highlights: string[];
 }
@@ -76,7 +80,23 @@ const categories: ProjectCategory[] = [
     "WPC Decking",
 ];
 
-const projects: ProjectItem[] = [
+// 1. Dynamic glob import for all image assets across project folders
+const projectGalleryImages = import.meta.glob<{ default: string }>(
+    "@/assets/**/*.{png,jpg,jpeg,webp,svg,JPG}",
+    { eager: true }
+);
+
+// Helper function to dynamically collect all images within a specific folder path
+const getProjectImages = (folderName: string, fallbackCover: string): string[] => {
+    const matched = Object.entries(projectGalleryImages)
+        .filter(([path]) => path.toLowerCase().includes(`/${folderName.toLowerCase()}/`))
+        .map(([, module]) => module.default);
+
+    return matched.length > 0 ? matched : [fallbackCover];
+};
+
+// 2. Updated Projects Array matching the updated ProjectItem interface
+export const projects: ProjectItem[] = [
     {
         id: "proj-1",
         title: "Luxury Modern Living Accent Wall",
@@ -85,6 +105,7 @@ const projects: ProjectItem[] = [
         completionDate: "August 2026",
         sqft: "450 sq. ft.",
         image: luxury,
+        images: getProjectImages("Luxury Modern Living Accent Wall", luxury),
         description:
             "Fluted walnut WPC wall panels paired with integrated warm LED strip channels to frame an ultra-thin TV mount setup.",
         highlights: [
@@ -101,6 +122,7 @@ const projects: ProjectItem[] = [
         completionDate: "July 2026",
         sqft: "1,200 sq. ft.",
         image: commercial,
+        images: getProjectImages("Commercial Hotel Lobby Reception Feature", commercial),
         description:
             "High-gloss Calacatta Gold UV marble sheets seamlessly wrapped around curved reception desks and main backdrops.",
         highlights: [
@@ -117,6 +139,7 @@ const projects: ProjectItem[] = [
         completionDate: "June 2026",
         sqft: "850 sq. ft.",
         image: resident,
+        images: getProjectImages("Residential Poolside Patio Terrace", resident),
         description:
             "Co-extruded composite decking in Teak with hidden fastener clip system and integrated step lighting.",
         highlights: [
@@ -133,6 +156,7 @@ const projects: ProjectItem[] = [
         completionDate: "August 2026",
         sqft: "180 Linear ft.",
         image: modern,
+        images: getProjectImages("Modern Minimalist Perimeter Privacy Barrier", modern),
         description:
             "Charcoal Slate composite fencing with aluminum posts creating a clean, modern security enclosure.",
         highlights: [
@@ -149,6 +173,7 @@ const projects: ProjectItem[] = [
         completionDate: "May 2026",
         sqft: "320 sq. ft.",
         image: executive,
+        images: getProjectImages("Executive Conference Room Media Backdrop", executive),
         description:
             "MDF acoustic slatted timber panels behind corporate teleconferencing displays for enhanced voice clarity.",
         highlights: [
@@ -165,12 +190,30 @@ const projects: ProjectItem[] = [
         completionDate: "June 2026",
         sqft: "600 sq. ft.",
         image: spa,
+        images: getProjectImages("Spa & Wellness Wet Room Wall Cladding", spa),
         description:
             "Nero Marquina black marble pattern UV sheets installed in high-humidity shower and steam room enclosures.",
         highlights: [
             "100% Waterproof seal",
             "Mildew & mold resistant",
             "Easiest steam-clean maintenance",
+        ],
+    },
+    {
+        id: "proj-7",
+        title: "Master Bedroom Acoustic Headboard Feature Wall",
+        category: "WPC Wall Panels",
+        location: "Malibu, CA",
+        completionDate: "September 2026",
+        sqft: "280 sq. ft.",
+        image: bedroom,
+        images: getProjectImages("Master Bedroom Acoustic Headboard Feature Wall", bedroom),
+        description:
+            "Floor-to-ceiling slatted oak WPC acoustic panels integrated behind a custom upholstered headboard, paired with ambient backlighting.",
+        highlights: [
+            "Noise-reducing acoustic backing for quiet sleep",
+            "Seamless full-height vertical installation",
+            "Warm, eco-friendly wood veneer aesthetic",
         ],
     },
 ];
@@ -425,12 +468,12 @@ function GalleryPage() {
                 text="Explore completed installations and witness real-world transformations using Deco Galleria WPC panels, UV marble sheets, composite fencing, and decking."
             />
 
-            
+
             {/* SECTION 2: BEFORE & AFTER */}
 
             <section className="section-space border-t border-border bg-secondary/10">
                 <div className="site-container">
-                
+
                     <div className="mt-8">
                         <BeforeAfterSlider
                             beforeImage={before}
@@ -574,15 +617,12 @@ function GalleryPage() {
                         )}
                 </div>
             </section>
-{/* SECTION 1: FINISHED INSTALLATIONS SHOWCASE */}
 
+            {/* SECTION 1: FINISHED INSTALLATIONS SHOWCASE */}
             <section className="section-space">
                 <div className="site-container">
-
                     <div className="mb-8">
-                        <p className="eyebrow">
-                            Finished Work
-                        </p>
+                        <p className="eyebrow">Finished Work</p>
 
                         <h2 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">
                             Completed Installations
@@ -594,14 +634,11 @@ function GalleryPage() {
                     </div>
 
                     {/* Existing Project Categories */}
-
                     <div className="flex flex-wrap items-center justify-start gap-2 border-b border-border pb-6">
                         {categories.map((cat) => (
                             <button
                                 key={cat}
-                                onClick={() =>
-                                    setActiveCategory(cat)
-                                }
+                                onClick={() => setActiveCategory(cat)}
                                 className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all rounded-md ${activeCategory === cat
                                     ? "bg-primary text-primary-foreground shadow-sm"
                                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -613,83 +650,17 @@ function GalleryPage() {
                     </div>
 
                     {/* Animated Project Grid */}
-
                     <motion.div
                         layout
                         className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
                     >
                         <AnimatePresence>
                             {filteredProjects.map((item) => (
-                                <motion.div
+                                <ProjectCard
                                     key={item.id}
-                                    layout
-                                    initial={{
-                                        opacity: 0,
-                                        scale: 0.9,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                        scale: 1,
-                                    }}
-                                    exit={{
-                                        opacity: 0,
-                                        scale: 0.9,
-                                    }}
-                                    transition={{
-                                        duration: 0.35,
-                                        ease: "easeInOut",
-                                    }}
-                                    onClick={() =>
-                                        setSelectedProject(item)
-                                    }
-                                    className="group cursor-pointer overflow-hidden border border-border bg-card transition-all hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between"
-                                >
-                                    <div>
-                                        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                                            <img
-                                                src={item.image}
-                                                alt={item.title}
-                                                loading="lazy"
-                                                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                            />
-
-                                            <span className="absolute top-3 left-3 bg-black/75 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">
-                                                {item.category}
-                                            </span>
-                                        </div>
-
-                                        <div className="p-5">
-                                            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                                <span>
-                                                    {item.location}
-                                                </span>
-
-                                                <span className="font-semibold text-primary">
-                                                    {item.sqft}
-                                                </span>
-                                            </div>
-
-                                            <h3 className="text-lg font-bold text-card-foreground group-hover:text-primary transition-colors">
-                                                {item.title}
-                                            </h3>
-
-                                            <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
-                                                {item.description}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="px-5 pb-5 pt-2 border-t border-border/50 bg-muted/20 flex items-center justify-between">
-                                        <span className="text-[11px] font-medium text-muted-foreground">
-                                            Completed{" "}
-                                            {item.completionDate}
-                                        </span>
-
-                                        <span className="text-xs font-bold text-primary">
-                                            View Details →
-                                        </span>
-                                    </div>
-                                </motion.div>
+                                    item={item}
+                                    onSelectProject={(project) => setSelectedProject(project)}
+                                />
                             ))}
                         </AnimatePresence>
                     </motion.div>
@@ -697,7 +668,6 @@ function GalleryPage() {
             </section>
 
             {/* SECTION 4: BEFORE & AFTER CASE STUDIES */}
-
             <section className="section-space border-t border-border bg-secondary/30">
                 <div className="site-container">
 
@@ -940,7 +910,7 @@ function GalleryPage() {
                             <div className=" gap-1">
                                 <div className="relative">
                                     <img
-                                        src={ 
+                                        src={
                                             selectedTransformation.beforeImg
                                         }
                                         alt={`${selectedTransformation.title} Before`}
@@ -1076,5 +1046,126 @@ function BeforeAfterSlider({
                 className="absolute inset-0 opacity-0 cursor-ew-resize w-full h-full"
             />
         </div>
+    );
+}
+function ProjectCard({
+    item,
+    onSelectProject,
+}: {
+    item: ProjectItem;
+    onSelectProject: (project: ProjectItem) => void;
+}) {
+    // Local state to track the active displayed image for this card
+    const [activeImage, setActiveImage] = useState<string>(item.image);
+
+    return (
+        <motion.div
+            layout
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="group border border-border bg-card transition-all hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between overflow-hidden"
+        >
+            <div>
+                {/* Featured Main Image */}
+                <div
+                    onClick={() => onSelectProject(item)}
+                    className="relative aspect-[4/3] cursor-pointer overflow-hidden bg-muted"
+                >
+                    <img
+                        src={activeImage}
+                        alt={item.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+
+                    <span className="absolute top-3 left-3 bg-black/75 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded z-10">
+                        {item.category}
+                    </span>
+                </div>
+
+                {/* Scrollable Sub-Images / Gallery Thumbnails Bar */}
+                {item.images && item.images.length > 0 && (
+                    <div className="px-5 pt-3 pb-1 border-b border-border/50">
+                        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted-foreground/30 scrollbar-track-transparent">
+                            {/* Include main cover image option */}
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveImage(item.image);
+                                }}
+                                className={`relative flex-shrink-0 h-12 w-14 rounded-md overflow-hidden border-2 transition-all ${activeImage === item.image
+                                    ? "border-primary ring-1 ring-primary"
+                                    : "border-transparent opacity-70 hover:opacity-100"
+                                    }`}
+                            >
+                                <img
+                                    src={item.image}
+                                    alt={`${item.title} cover`}
+                                    className="h-full w-full object-cover"
+                                />
+                            </button>
+
+                            {/* Sub-images loop */}
+                            {item.images.map((imgUrl, idx) => (
+                                <button
+                                    key={`${item.id}-img-${idx}`}
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setActiveImage(imgUrl);
+                                    }}
+                                    className={`relative flex-shrink-0 h-12 w-14 rounded-md overflow-hidden border-2 transition-all ${activeImage === imgUrl
+                                        ? "border-primary ring-1 ring-primary"
+                                        : "border-transparent opacity-70 hover:opacity-100"
+                                        }`}
+                                >
+                                    <img
+                                        src={imgUrl}
+                                        alt={`${item.title} preview ${idx + 1}`}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Card Content Details */}
+                <div
+                    className="p-5 cursor-pointer"
+                    onClick={() => onSelectProject(item)}
+                >
+                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                        <span>{item.location}</span>
+                        <span className="font-semibold text-primary">{item.sqft}</span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-card-foreground group-hover:text-primary transition-colors">
+                        {item.title}
+                    </h3>
+
+                    <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
+                        {item.description}
+                    </p>
+                </div>
+            </div>
+
+            {/* Card Footer */}
+            <div
+                className="px-5 pb-5 pt-2 border-t border-border/50 bg-muted/20 flex items-center justify-between cursor-pointer"
+                onClick={() => onSelectProject(item)}
+            >
+                <span className="text-[11px] font-medium text-muted-foreground">
+                    Completed {item.completionDate}
+                </span>
+
+                <span className="text-xs font-bold text-primary">
+                    View Details →
+                </span>
+            </div>
+        </motion.div>
     );
 }
