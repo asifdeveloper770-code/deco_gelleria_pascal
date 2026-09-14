@@ -4,13 +4,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Wrench, ShieldCheck, Truck, Ruler, Layers, Sparkles } from "lucide-react";
 import accessoryImage from "@/assets/deco-galleria-logo.png";
-import brushes from "@/assets/Brushed Metal Trim Profiles.jpg"
-import corner from "@/assets/Corner Finishing Accents.jpg"
-import custom from "@/assets/Custom Curved Trim Joints.jpg"
-import hidden from "@/assets/Hidden Stainless Clip Assembly.jpg"
-import panel from "@/assets/Panel Adhesive Application.jpg"
-import surface from "@/assets/Surface Care Kit (1).jpg"
+import power from "@/assets/Power Supply.jpeg"
+import plated_corner from "@/assets/Plated WPC Indoor Covers 1.jpeg"
+import marble from "@/assets/UV Marble Edge.jpeg"
+import indoor_light from "@/assets/WPC Indoor lights.jpeg"
+import outdoor_corner from "@/assets/WPC Outdoor Corners.jpeg"
+import Indoor from "@/assets/WPC Indoor Corners.jpeg"
+import Indorclip from "@/assets/Indoor Clips.jpeg"
+import outdoor_clip from "@/assets/Outdoor Clips.jpeg"
+import corner2 from "@/assets/WPC Indoor corners 2.jpeg"
+// import platte from "@/assets/WPC Indoor corners 2.jpeg"
+
+import UvMarble from "@/assets/UV Marble T.jpeg"
 import { finished } from "stream";
+import { Corner } from "@radix-ui/react-scroll-area";
 
 export const Route = createFileRoute("/miscellaneous")({
   head: () => ({
@@ -60,12 +67,16 @@ const accessoriesList = [
 ];
 
 const galleryImages = [
-  { src: brushes, title: "Brushed Metal Trim Profiles", category: "Edge Trims" },
-  { src: hidden, title: "Hidden Stainless Clip Assembly", category: "Hardware" },
-  { src: panel, title: "Panel Adhesive Application", category: "Installation" },
-  { src: corner, title: "Corner Finishing Accents", category: "Architectural Details" },
-  { src: custom, title: "Custom Curved Trim Joints", category: "Specialty Profiles" },
-  { src: surface, title: "Surface Care Kit", category: "Maintenance" },
+  { src: marble, title: "UV Marble Edge" },
+  { src: plated_corner, title: "Plated WPC Indoor Corner" },
+  { src: power, title: "Power Supply"},
+  { src: Indoor, title: "WPC Indoor Corners"},
+  { src: indoor_light, title: "WPC Indoor Light"},
+  { src: outdoor_corner, title: "WPC Outdoor Corners"},
+  { src: corner2 , title: "WPC Outdoor Corners" },
+  { src: Indorclip, title: "Indoor Clips" },
+  { src: outdoor_clip , title: "Outdoor Clips"},
+  // { src: outdoor_clip , title: "Outdoor Clips", category: "Maintenance" },
 ];
 
 const services = [
@@ -90,7 +101,7 @@ export function MiscellaneousPage() {
   const [selectedImage, setSelectedImage] = useState<{
     src: string;
     title: string;
-    category: string;
+    // category: string;
   } | null>(null);
 
   return (
@@ -195,14 +206,14 @@ export function MiscellaneousPage() {
                     src={item.src}
                     alt={item.title}
                     loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-fit transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-black/20 opacity-0 transition-opacity group-hover:opacity-100" />
                 </div>
                 <div className="p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                  {/* <p className="text-xs font-semibold uppercase tracking-wider text-primary">
                     {item.category}
-                  </p>
+                  </p> */}
                   <h3 className="mt-1 text-base font-bold text-card-foreground">
                     {item.title}
                   </h3>
@@ -227,9 +238,9 @@ export function MiscellaneousPage() {
                 <DialogTitle className="text-lg font-bold">
                   {selectedImage.title}
                 </DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground mt-1">
+                {/* <DialogDescription className="text-xs text-muted-foreground mt-1">
                   {selectedImage.category}
-                </DialogDescription>
+                </DialogDescription> */}
               </div>
             </div>
           )}
