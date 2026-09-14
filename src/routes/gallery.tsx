@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import showcaseImage from "@/assets/deco-galleria-logo.png";
 import newer from "@/assets/uv-marble.jpg";
 import before from "@/assets/Before_new.png";
-import after from "@/assets/After_new.png";
+import after from "@/assets/After_new.jpeg";
 import living from "@/assets/Living Room Feature Wall Revamp.jpg";
 import master from "@/assets/Master Suite Bathroom Remodel.jpg";
 import premier from "@/assets/Perimeter Privacy Fence Upgrade.png";
