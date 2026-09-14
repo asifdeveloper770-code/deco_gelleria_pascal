@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle2, Download, Droplets, Hammer, Leaf, MapPin, Pho
 import heroImage from "@/assets/deco-hero.jpg";
 import bedroomImage from "@/assets/wpc-bedroom.jpg";
 import kitchenImage from "@/assets/wpc-kitchen.jpg";
-import stoneImage from "@/assets/pu-stone.jpg";
+import stoneImage from "@/assets/fencing.jpg";
 import marbleImage from "@/assets/uv-marble.jpg";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -14,9 +14,10 @@ import decoPdf from "@/assets/pdf/DECO GALLERIA INC BIO  About Page.pdf";
 import ss from "@/assets/Screenshot.png"
 
 
+
 const products = [
   { title: "WPC Panels", text: "Warm, dimensional slat walls for interiors and exterior-rated applications.", image: heroImage, to: "/wpc-panels" as const },
-  { title: "PU Stone", text: "Lightweight stone character with easier handling and installation.", image: stoneImage, to: "/pu-stone" as const },
+  { title: "Fencing", text: "WPC fencing is a modern outdoor barrier made by blending recycled wood fibers with plastic polymers.", image: stoneImage, to: "/pu-stone" as const },
   { title: "UV Marble Sheets", text: "Large, seamless marble looks for polished modern interiors.", image: marbleImage, to: "/uv-marble" as const },
 ];
 
