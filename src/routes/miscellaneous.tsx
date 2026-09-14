@@ -13,7 +13,7 @@ import Indoor from "@/assets/WPC Indoor Corners.jpeg"
 import Indorclip from "@/assets/Indoor Clips.jpeg"
 import outdoor_clip from "@/assets/Outdoor Clips.jpeg"
 import corner2 from "@/assets/WPC Indoor corners 2.jpeg"
-// import platte from "@/assets/WPC Indoor corners 2.jpeg"
+import marbleT from "@/assets/UV Marble T.jpeg"
 
 import UvMarble from "@/assets/UV Marble T.jpeg"
 import { finished } from "stream";
@@ -68,6 +68,7 @@ const accessoriesList = [
 
 const galleryImages = [
   { src: marble, title: "UV Marble Edge" },
+  { src: marbleT, title: "UV Marble T" },
   { src: plated_corner, title: "Plated WPC Indoor Corner" },
   { src: power, title: "Power Supply"},
   { src: Indoor, title: "WPC Indoor Corners"},
