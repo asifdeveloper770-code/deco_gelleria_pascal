@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { adminListGallery, adminAddGalleryItem, adminDeleteGalleryItem } from "@/lib/api";
+import { uploadImage } from "@/lib/image-upload";
 import { AdminLayout } from "@/components/admin-layout";
 import { Loader2, Trash2, Upload, Image as ImageIcon } from "lucide-react";
 
@@ -27,31 +28,14 @@ function AdminGalleryPage() {
   const { data: galleryItems, isLoading } = useQuery({
     queryKey: ["gallery"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("gallery")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data as GalleryItem[];
+      return (await adminListGallery()) as GalleryItem[];
     },
   });
 
   // Delete Image Mutation
   const deleteMutation = useMutation({
     mutationFn: async (item: GalleryItem) => {
-      const { error: storageError } = await supabase.storage
-        .from("gallery")
-        .remove([item.storage_path]);
-
-      if (storageError) console.error("Storage delete warning:", storageError);
-
-      const { error: dbError } = await supabase
-        .from("gallery")
-        .delete()
-        .eq("id", item.id);
-
-      if (dbError) throw dbError;
+      await adminDeleteGalleryItem({ data: { id: item.id } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gallery"] });
@@ -66,27 +50,11 @@ function AdminGalleryPage() {
     try {
       setUploading(true);
 
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `uploads/${fileName}`;
+      const uploaded = await uploadImage(file);
 
-      const { error: uploadError } = await supabase.storage
-        .from("gallery")
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from("gallery")
-        .getPublicUrl(filePath);
-
-      const { error: dbError } = await supabase.from("gallery").insert({
-        title,
-        image_url: urlData.publicUrl,
-        storage_path: filePath,
+      await adminAddGalleryItem({
+        data: { title, image_url: uploaded.url, storage_path: uploaded.id },
       });
-
-      if (dbError) throw dbError;
 
       setTitle("");
       setFile(null);
@@ -105,7 +73,7 @@ function AdminGalleryPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Gallery Showcase</h1>
           <p className="mt-1 text-xs text-slate-400">
-            Upload images to Supabase storage and manage website gallery items.
+            Upload images and manage website gallery items.
           </p>
         </div>
 
