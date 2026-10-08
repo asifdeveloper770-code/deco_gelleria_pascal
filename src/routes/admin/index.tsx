@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase"; // Adjust path to your Supabase client
+import { adminDashboard } from "@/lib/api";
 import { AdminLayout } from "@/components/admin-layout";
 
 export const Route = createFileRoute("/admin/")({
@@ -19,65 +19,20 @@ interface RecentQuote {
 }
 
 export function AdminDashboardPage() {
-  // Fetch count of total products
-  const { data: totalProducts = 0, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["dashboard_products_count"],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from("products")
-        .select("*", { count: "exact", head: true });
-      if (error) throw error;
-      return count || 0;
-    },
+  // Fetch counts + recent quotes in one request
+  const { data: dashboard, isLoading } = useQuery({
+    queryKey: ["admin_dashboard"],
+    queryFn: () => adminDashboard(),
   });
 
-  // Fetch count of total quotes
-  const { data: totalQuotes = 0, isLoading: isLoadingQuotes } = useQuery({
-    queryKey: ["dashboard_quotes_count"],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from("quotes")
-        .select("*", { count: "exact", head: true });
-      if (error) throw error;
-      return count || 0;
-    },
-  });
-
-  // Fetch count of contact submissions
-  const { data: contactSubmissions = 0, isLoading: isLoadingContacts } = useQuery({
-    queryKey: ["dashboard_contacts_count"],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from("contacts")
-        .select("*", { count: "exact", head: true });
-      if (error) throw error;
-      return count || 0;
-    },
-  });
-
-  // Fetch recent quotes with joined category name
-  const { data: recentQuotes = [], isLoading: isLoadingRecentQuotes } = useQuery({
-    queryKey: ["dashboard_recent_quotes"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("quotes")
-        .select(`
-          id,
-          created_at,
-          name,
-          email,
-          area_sqft,
-          categories (
-            name
-          )
-        `)
-        .order("created_at", { ascending: false })
-        .limit(5);
-
-      if (error) throw error;
-      return data as unknown as RecentQuote[];
-    },
-  });
+  const totalProducts = dashboard?.totalProducts ?? 0;
+  const totalQuotes = dashboard?.totalQuotes ?? 0;
+  const contactSubmissions = dashboard?.totalContacts ?? 0;
+  const recentQuotes = (dashboard?.recentQuotes ?? []) as unknown as RecentQuote[];
+  const isLoadingProducts = isLoading;
+  const isLoadingQuotes = isLoading;
+  const isLoadingContacts = isLoading;
+  const isLoadingRecentQuotes = isLoading;
 
   return (
     <AdminLayout>
