@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { adminListContacts, adminDeleteContact } from "@/lib/api";
 import { AdminLayout } from "@/components/admin-layout";
 import { Loader2, Mail, MessageSquare, Trash2, Eye, X, Phone, Tag } from "lucide-react";
 
@@ -26,36 +26,18 @@ function AdminContactsPage() {
   const queryClient = useQueryClient();
   const [selectedInquiry, setSelectedInquiry] = useState<ContactInquiry | null>(null);
 
-  // Fetch Contact Inquiries with Joined Category details from Supabase
+  // Fetch Contact Inquiries with joined Category details
   const { data: contacts, isLoading } = useQuery({
     queryKey: ["admin_contacts"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("contacts")
-        .select(`
-          id,
-          name,
-          email,
-          phone,
-          category_id,
-          project_details,
-          created_at,
-          categories (
-            name
-          )
-        `)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data as unknown as ContactInquiry[];
+      return (await adminListContacts()) as unknown as ContactInquiry[];
     },
   });
 
   // Delete Inquiry Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("contacts").delete().eq("id", id);
-      if (error) throw error;
+      await adminDeleteContact({ data: { id } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin_contacts"] });
