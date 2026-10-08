@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { adminListQuotes, adminUpdateQuoteStatus, adminDeleteQuote } from "@/lib/api";
 import { AdminLayout } from "@/components/admin-layout";
 import { Loader2, FileText, Trash2, Eye, X, Mail, Tag, User } from "lucide-react";
 
@@ -29,33 +29,11 @@ function AdminQuotesPage() {
   const queryClient = useQueryClient();
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
 
-  // Fetch Quotes with joined Category data from Supabase
+  // Fetch Quotes with joined Category data
   const { data: quotes, isLoading, error } = useQuery({
   queryKey: ["admin_quotes"],
   queryFn: async () => {
-    const { data, error } = await supabase
-      .from("quotes")
-      .select(`
-        id,
-        created_at,
-        user_type,
-        category_id,
-        area_sqft,
-        estimated_price,
-        name,
-        email,
-        project_notes,
-        categories (
-          name
-        )
-      `)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Supabase error fetching quotes:", error);
-      throw error;
-    }
-    return data as unknown as Quote[];
+    return (await adminListQuotes()) as unknown as Quote[];
   },
 });
 
@@ -68,12 +46,7 @@ function AdminQuotesPage() {
       id: string;
       status: NonNullable<Quote["status"]>;
     }) => {
-      const { error } = await supabase
-        .from("quotes")
-        .update({ status })
-        .eq("id", id);
-
-      if (error) throw error;
+      await adminUpdateQuoteStatus({ data: { id, status } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin_quotes"] });
@@ -83,8 +56,7 @@ function AdminQuotesPage() {
   // Delete Quote Mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("quotes").delete().eq("id", id);
-      if (error) throw error;
+      await adminDeleteQuote({ data: { id } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin_quotes"] });
