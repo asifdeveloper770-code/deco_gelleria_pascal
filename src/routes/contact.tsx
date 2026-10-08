@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Field } from "@/components/site-shell";
 import { FormEvent, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { getCategories, submitContact } from "@/lib/api";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -39,17 +39,11 @@ export function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Fetch real categories from Supabase
+  // Fetch real categories
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("id, name, slug")
-        .order("name", { ascending: true });
-
-      if (error) throw error;
-      return data as Category[];
+      return (await getCategories()) as Category[];
     },
   });
 
@@ -77,17 +71,15 @@ export function ContactPage() {
     setErrorMessage(null);
 
     try {
-      const { error } = await supabase.from("contacts").insert([
-        {
+      await submitContact({
+        data: {
           name: formData.name,
           email: formData.email,
           phone: formData.phone || null,
           category_id: formData.category_id || null,
           project_details: formData.project_details,
         },
-      ]);
-
-      if (error) throw error;
+      });
 
       setSent(true);
       setFormData({
