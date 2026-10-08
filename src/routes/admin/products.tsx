@@ -1,7 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import {
+  getCategories,
+  adminListGallery,
+  adminListProducts,
+  adminCreateProduct,
+  adminUpdateProduct,
+  adminDeleteProduct,
+} from "@/lib/api";
+import { uploadImage } from "@/lib/image-upload";
 import { AdminLayout } from "@/components/admin-layout";
 import { Loader2, Plus, Trash2, Package, Edit2, Image as ImageIcon, Upload, Images, X, Check } from "lucide-react";
 
@@ -64,16 +72,7 @@ function AdminProductsPage() {
   const { data: categories = [], isLoading: isLoadingCategories, error: categoryError } = useQuery({
     queryKey: ["admin_categories"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("id, name, slug")
-        .order("name", { ascending: true });
-
-      if (error) {
-        console.error("Error fetching categories:", error);
-        throw error;
-      }
-      return data as Category[];
+      return (await getCategories()) as Category[];
     },
   });
 
@@ -81,13 +80,7 @@ function AdminProductsPage() {
   const { data: galleryItems = [], isLoading: isLoadingGallery } = useQuery({
     queryKey: ["admin_gallery"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("gallery")
-        .select("id, title, image_url, storage_path, category, created_at")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data as GalleryItem[];
+      return (await adminListGallery()) as GalleryItem[];
     },
   });
 
@@ -95,38 +88,22 @@ function AdminProductsPage() {
   const { data: products, isLoading } = useQuery({
     queryKey: ["admin_products"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*, categories(id, name, slug)")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data as Product[];
+      return (await adminListProducts()) as Product[];
     },
   });
 
-  // Handle Local File Upload to Supabase Storage
+  // Handle Local File Upload (stored in TiDB)
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
       setIsUploading(true);
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-      const filePath = `products/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("products")
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage.from("products").getPublicUrl(filePath);
-      setImage(data.publicUrl);
+      const uploaded = await uploadImage(file);
+      setImage(uploaded.url);
     } catch (err) {
       console.error("Image upload failed:", err);
-      alert("Failed to upload image. Make sure the 'products' bucket exists and has public RLS policies.");
+      alert(err instanceof Error ? err.message : "Failed to upload image. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -163,13 +140,16 @@ function AdminProductsPage() {
 
   const createMutation = useMutation({
     mutationFn: async (newProduct: Omit<Product, "id" | "categories">) => {
-      const { data, error } = await supabase
-        .from("products")
-        .insert([newProduct])
-        .select();
-
-      if (error) throw error;
-      return data;
+      return await adminCreateProduct({
+        data: {
+          name: newProduct.name,
+          slug: newProduct.slug,
+          description: newProduct.description ?? null,
+          price: newProduct.price,
+          image: newProduct.image ?? null,
+          category_id: newProduct.category_id ?? null,
+        },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin_products"] });
@@ -179,21 +159,17 @@ function AdminProductsPage() {
 
   const updateMutation = useMutation({
     mutationFn: async (updatedProduct: Omit<Product, "categories">) => {
-      const { data, error } = await supabase
-        .from("products")
-        .update({
+      return await adminUpdateProduct({
+        data: {
+          id: updatedProduct.id,
           name: updatedProduct.name,
           slug: updatedProduct.slug,
-          description: updatedProduct.description,
+          description: updatedProduct.description ?? null,
           price: updatedProduct.price,
-          image: updatedProduct.image,
-          category_id: updatedProduct.category_id,
-        })
-        .eq("id", updatedProduct.id)
-        .select();
-
-      if (error) throw error;
-      return data;
+          image: updatedProduct.image ?? null,
+          category_id: updatedProduct.category_id ?? null,
+        },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin_products"] });
@@ -203,8 +179,7 @@ function AdminProductsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("products").delete().eq("id", id);
-      if (error) throw error;
+      await adminDeleteProduct({ data: { id } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin_products"] });
