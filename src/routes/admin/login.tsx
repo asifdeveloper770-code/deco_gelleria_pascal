@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase"; // Ensure your Supabase client import path is correct
+import { adminLogin } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLoginPage,
@@ -19,12 +19,7 @@ function AdminLoginPage() {
     setError(null);
 
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError) throw authError;
+      await adminLogin({ data: { email, password } });
 
       navigate({ to: "/admin" });
     } catch (err: any) {
