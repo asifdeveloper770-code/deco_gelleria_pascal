@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { getProductsByCategory } from "@/lib/api";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { CTA, PageIntro, ProductShowcase } from "@/components/content-blocks";
 import outdoorImage from "@/assets/outdoor.png";
@@ -44,14 +44,7 @@ export function WpcOutdoorPage() {
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ["outdoor_wpc_products"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*, categories!inner(name, slug)")
-        .ilike("categories.name", "%outdoor%") // Matches "Outdoor", "WPC Outdoor", etc.
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data as Product[];
+      return (await getProductsByCategory({ data: { match: "outdoor" } })) as Product[];
     },
   });
 
