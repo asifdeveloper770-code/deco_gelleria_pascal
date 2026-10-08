@@ -63,24 +63,8 @@ export function HomePage() {
       </div>
     </section>
 
-    <section className="bg-secondary">
-      <div className="site-container grid gap-px bg-border md:grid-cols-3">
-        <Stat value="3" label="Signature material collections" />
-        <Stat value="8" label="Performance qualities" />
-        <Stat value="2" label="Counties served across Southern California" />
-      </div>
-    </section>
     <CTA title="Planning a larger project?" text="Ask about limited-time volume pricing for contractors, designers, residential developments, and commercial installations." />
   </>;
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return <>
-    <div className="bg-secondary p-8 sm:p-10">
-      <p className="text-5xl font-bold text-primary">{value}</p>
-      <p className="mt-2 text-sm font-semibold text-muted-foreground">{label}</p>
-    </div>;
-  </>
 }
 
 export function AboutPage() {
