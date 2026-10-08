@@ -32,6 +32,7 @@ import { Route as WpcPanelsIndexRouteImport } from './routes/wpc-panels/index'
 import { Route as WpcPanelsAcousticRouteImport } from './routes/wpc-panels/acoustic'
 import { Route as WpcPanelsIndoorRouteImport } from './routes/wpc-panels/indoor'
 import { Route as WpcPanelsOutdoorRouteImport } from './routes/wpc-panels/outdoor'
+import { Route as ApiImagesIdRouteImport } from './routes/api/images/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -148,6 +149,11 @@ const WpcPanelsOutdoorRoute = WpcPanelsOutdoorRouteImport.update({
   path: '/wpc-panels/outdoor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiImagesIdRoute = ApiImagesIdRouteImport.update({
+  id: '/api/images/$id',
+  path: '/api/images/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
   '/admin/': typeof AdminIndexRoute
   '/wpc-panels/': typeof WpcPanelsIndexRoute
+  '/api/images/$id': typeof ApiImagesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
   '/admin': typeof AdminIndexRoute
   '/wpc-panels': typeof WpcPanelsIndexRoute
+  '/api/images/$id': typeof ApiImagesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/wpc-panels/outdoor': typeof WpcPanelsOutdoorRoute
   '/admin/': typeof AdminIndexRoute
   '/wpc-panels/': typeof WpcPanelsIndexRoute
+  '/api/images/$id': typeof ApiImagesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/wpc-panels/outdoor'
     | '/admin/'
     | '/wpc-panels/'
+    | '/api/images/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/wpc-panels/outdoor'
     | '/admin'
     | '/wpc-panels'
+    | '/api/images/$id'
   id:
     | '__root__'
     | '/'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '/wpc-panels/outdoor'
     | '/admin/'
     | '/wpc-panels/'
+    | '/api/images/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   WpcPanelsOutdoorRoute: typeof WpcPanelsOutdoorRoute
   AdminIndexRoute: typeof AdminIndexRoute
   WpcPanelsIndexRoute: typeof WpcPanelsIndexRoute
+  ApiImagesIdRoute: typeof ApiImagesIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -492,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WpcPanelsOutdoorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/images/$id': {
+      id: '/api/images/$id'
+      path: '/api/images/$id'
+      fullPath: '/api/images/$id'
+      preLoaderRoute: typeof ApiImagesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -519,6 +539,7 @@ const rootRouteChildren: RootRouteChildren = {
   WpcPanelsOutdoorRoute: WpcPanelsOutdoorRoute,
   AdminIndexRoute: AdminIndexRoute,
   WpcPanelsIndexRoute: WpcPanelsIndexRoute,
+  ApiImagesIdRoute: ApiImagesIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
