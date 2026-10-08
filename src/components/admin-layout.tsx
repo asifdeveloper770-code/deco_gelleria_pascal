@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { supabase } from "@/lib/supabase";
+import { getAdminSession, adminLogout } from "@/lib/api";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
@@ -12,13 +12,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function checkAuth() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const session = await getAdminSession().catch(() => null);
       if (!session) {
         navigate({ to: "/admin/login" });
       } else {
-        setUserEmail(session.user.email ?? "Administrator");
+        setUserEmail(session.email ?? "Administrator");
       }
       setAuthChecking(false);
     }
@@ -26,7 +24,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   }, [navigate]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await adminLogout().catch(() => null);
     navigate({ to: "/admin/login" });
   };
 
