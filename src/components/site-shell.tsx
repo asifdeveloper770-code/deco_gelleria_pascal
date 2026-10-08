@@ -22,7 +22,7 @@ import logoAsset from "@/assets/deco-galleria-logo.png";
 // } from "@/components/ui/dialog";
 // import { FormEvent, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { getCategories, submitQuote } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -281,16 +281,11 @@ export function QuoteDialog({ open, onOpenChange }: QuoteDialogProps) {
   const [email, setEmail] = useState("");
   const [projectNotes, setProjectNotes] = useState("");
 
-  // Fetch categories from Supabase
+  // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("categories")
-        .select("id, name, slug")
-        .order("name", { ascending: true });
-
-      if (error) throw error;
+      const data = await getCategories();
       
       // Auto-select first category if available
       const firstCategory = data?.[0];
@@ -324,8 +319,8 @@ export function QuoteDialog({ open, onOpenChange }: QuoteDialogProps) {
     setErrorMessage(null);
 
     try {
-      const { error } = await supabase.from("quotes").insert([
-        {
+      await submitQuote({
+        data: {
           user_type: userType,
           category_id: categoryId || null,
           area_sqft: area,
@@ -334,9 +329,7 @@ export function QuoteDialog({ open, onOpenChange }: QuoteDialogProps) {
           email,
           project_notes: projectNotes || null,
         },
-      ]);
-
-      if (error) throw error;
+      });
 
       setSubmitted(true);
     } catch (err: any) {
