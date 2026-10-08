@@ -25,7 +25,7 @@ import bedroom from "@/assets/Master Bedroom Acoustic Headboard Feature Wall/IMG
 import poolside from "@/assets/Poolside Terrace Transformation.jpg";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { getGalleryPageData } from "@/lib/api";
 
 
 
@@ -343,73 +343,10 @@ function GalleryPage() {
                  * products.category_id -> categories.id
                  */
 
-                const { data: productsData, error: productsError } =
-                    await supabase
-                        .from("products")
-                        .select(`
-                            category_id,
-                            categories (
-                                id,
-                                name
-                            )
-                        `)
-                        .not("category_id", "is", null);
+                const { categories, images } = await getGalleryPageData();
 
-                if (productsError) {
-                    throw productsError;
-                }
-
-                /*
-                 * Remove duplicate categories.
-                 */
-
-                const categoryMap = new Map<string, Category>();
-
-                productsData?.forEach((product: any) => {
-                    const category = product.categories;
-
-                    if (category?.id && category?.name) {
-                        categoryMap.set(category.id, {
-                            id: category.id,
-                            name: category.name,
-                        });
-                    }
-                });
-
-                const uniqueCategories = Array.from(
-                    categoryMap.values()
-                ).sort((a, b) =>
-                    a.name.localeCompare(b.name)
-                );
-
-                setProductCategories(uniqueCategories);
-
-                /*
-                 * Fetch every image from the images table.
-                 *
-                 * Change these column names if your images
-                 * table uses different names.
-                 */
-
-                const { data: imagesData, error: imagesError } =
-                    await supabase
-                        .from("products")
-                        .select(`
-                            id,
-                            image,
-                            category_id
-                        `)
-                        .order("id", {
-                            ascending: false,
-                        });
-
-                if (imagesError) {
-                    throw imagesError;
-                }
-
-                setGalleryImages(
-                    (imagesData as GalleryImage[]) ?? []
-                );
+                setProductCategories(categories as Category[]);
+                setGalleryImages((images as GalleryImage[]) ?? []);
             } catch (error) {
                 console.error(
                     "Error loading gallery:",
